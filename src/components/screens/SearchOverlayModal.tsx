@@ -5,9 +5,11 @@ import {
   Clock, 
   Tag, 
   ArrowRight,
-  Mic,
-  MicOff,
-  Check
+  Mic, 
+  MicOff, 
+  Check,
+  Camera,
+  Sparkles
 } from 'lucide-react';
 import { useCollectly } from '../../context/CollectlyContext';
 import { SavedItem } from '../../types';
@@ -22,12 +24,22 @@ export const SearchOverlayModal: React.FC = () => {
     items, 
     setSelectedItem,
     recordItemVisit,
+    searchQuery,
+    setSearchQuery,
     showToast
   } = useCollectly();
 
   const [query, setQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync searchQuery from parent context when modal opens
+  useEffect(() => {
+    if (searchQuery) {
+      setQuery(searchQuery);
+    }
+  }, [searchQuery, isSearchModalOpen]);
 
   // Initialize Web Speech Recognition
   useEffect(() => {
@@ -93,12 +105,21 @@ export const SearchOverlayModal: React.FC = () => {
     }
   };
 
+  const handleImageSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileName = file.name.replace(/\.[^/.]+$/, "");
+      setQuery(`Visual search: ${fileName}`);
+      showToast('Image Search', `Analyzing visual features of "${file.name}"...`, 'info');
+    }
+  };
+
   // Keyboard shortcut listener for Command+K / Ctrl+K & Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setIsSearchModalOpen(true);
+        setIsSearchModalOpen(!isSearchModalOpen);
       }
       if (e.key === 'Escape' && isSearchModalOpen) {
         setIsSearchModalOpen(false);
@@ -108,7 +129,14 @@ export const SearchOverlayModal: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isSearchModalOpen, setIsSearchModalOpen]);
 
-  // Suggested keywords detected across all saved files
+  // Reset or focus input on open
+  useEffect(() => {
+    if (!isSearchModalOpen) {
+      setIsListening(false);
+    }
+  }, [isSearchModalOpen]);
+
+  // Suggested keywords based on current query
   const suggestedKeywords = useMemo(() => {
     return suggestKeywordsForQuery(query, items, 8);
   }, [query, items]);
@@ -118,35 +146,31 @@ export const SearchOverlayModal: React.FC = () => {
     if (!query.trim()) return [];
 
     const q = query.toLowerCase().trim();
-    const tokens = q.split(/\s+/).filter(Boolean);
+    const isAskAi = q.startsWith('ask ai:') || q.startsWith('ai:');
+    const cleanQ = isAskAi ? q.replace(/^(ask ai:|ai:)\s*/i, '') : q;
+    const tokens = cleanQ.split(/\s+/).filter(Boolean);
 
     return items
-      .filter(item => !item.isArchived)
       .map(item => {
         let score = 0;
-        const matchedKeywords: string[] = [];
-
         const titleLower = item.title.toLowerCase();
         const descLower = item.description.toLowerCase();
-        const categoryLower = item.category.toLowerCase();
-        const tagsLower = (item.tags || []).map(t => t.toLowerCase());
-        const domainLower = item.sourceDomain.toLowerCase();
         const contentLower = (item.content || '').toLowerCase();
+        const categoryLower = item.category.toLowerCase();
+        const tagsLower = item.tags.map(t => t.toLowerCase());
 
-        // Exact match
-        if (titleLower.includes(q)) {
-          score += 60;
-          matchedKeywords.push('Title');
+        const matchedKeywords: string[] = [];
+
+        // Exact matches
+        if (titleLower.includes(cleanQ)) {
+          score += 50;
+          matchedKeywords.push('Title match');
         }
-        if (descLower.includes(q)) {
+        if (categoryLower === cleanQ) {
           score += 30;
-          matchedKeywords.push('Description');
-        }
-        if (categoryLower.includes(q)) {
-          score += 25;
           matchedKeywords.push('Category: ' + item.category);
         }
-        if (domainLower.includes(q)) {
+        if (item.sourceDomain.toLowerCase().includes(cleanQ)) {
           score += 20;
           matchedKeywords.push('Domain: ' + item.sourceDomain);
         }
@@ -187,54 +211,91 @@ export const SearchOverlayModal: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:pt-16 sm:px-4">
       {/* Blurred overlay */}
       <div 
-        className="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity"
+        className="fixed inset-0 bg-black/50 backdrop-blur-md transition-opacity"
         onClick={() => setIsSearchModalOpen(false)}
       />
 
       {/* Spotlight Window */}
-      <div className="relative w-full max-w-2xl bg-[var(--surface-primary)] rounded-[14px] shadow-2xl border border-black/[0.08] dark:border-white/[0.12] overflow-hidden flex flex-col max-h-[82vh] z-10 animate-in fade-in zoom-in-95 duration-150">
-        {/* Search Input Bar with Voice Search Mic */}
-        <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-black/[0.06] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.02]">
-          <Search size={18} className="text-[#007AFF] shrink-0" strokeWidth={2} />
-          
-          <input
-            type="text"
-            autoFocus
-            placeholder={isListening ? "Listening... Speak now" : "Search files or keywords..."}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 text-[14.5px] bg-transparent text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
-          />
+      <div className="relative w-full max-w-2xl bg-[var(--surface-primary)] rounded-[16px] shadow-2xl border border-black/[0.08] dark:border-white/[0.12] overflow-hidden flex flex-col max-h-[82vh] z-10 animate-in fade-in zoom-in-95 duration-150">
+        
+        {/* Search Input Bar with Unified Voice, Image, and Ask AI Actions */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2.5 px-4 py-3 border-b border-black/[0.06] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.02]">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+            <Search size={18} className="text-[#007AFF] shrink-0" strokeWidth={2.2} />
+            
+            <input
+              type="text"
+              autoFocus
+              placeholder={isListening ? "Listening... Speak now" : "Ask AI anything, search by voice, or drop image..."}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-1 text-[14.5px] bg-transparent text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none min-w-0"
+            />
 
-          {query && (
-            <button
-              onClick={() => setQuery('')}
-              className="p-1 rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer"
-            >
-              <X size={14} />
-            </button>
-          )}
-
-          {/* Voice Search Microphone Button */}
-          <button
-            onClick={toggleVoiceSearch}
-            className={clsx(
-              "p-1.5 rounded-[7px] transition-all cursor-pointer flex items-center justify-center",
-              isListening
-                ? "bg-[#D92D20] text-white animate-pulse shadow-sm"
-                : "text-[var(--text-secondary)] hover:text-[#007AFF] hover:bg-black/[0.04] dark:hover:bg-white/[0.08]"
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                className="p-1 rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer"
+              >
+                <X size={14} />
+              </button>
             )}
-            title={isListening ? "Stop listening" : "Search by voice"}
-            aria-label="Voice search"
-          >
-            {isListening ? <MicOff size={15} /> : <Mic size={15} strokeWidth={2} />}
-          </button>
+          </div>
+
+          {/* Quick Actions: Voice, Image, Ask AI */}
+          <div className="flex items-center gap-1.5 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-black/[0.04] dark:border-white/[0.06]">
+            {/* 1. Voice Search */}
+            <button
+              type="button"
+              onClick={toggleVoiceSearch}
+              className={clsx(
+                "h-7.5 px-2.5 rounded-full text-[11.5px] font-medium flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 shadow-2xs",
+                isListening
+                  ? "bg-[#D92D20] text-white animate-pulse"
+                  : "bg-black/[0.04] dark:bg-white/[0.08] text-[var(--text-primary)] hover:bg-black/[0.08] dark:hover:bg-white/[0.12]"
+              )}
+              title={isListening ? "Stop listening" : "Search by Voice"}
+            >
+              {isListening ? <MicOff size={13} /> : <Mic size={13} className="text-[#007AFF]" />}
+              <span>{isListening ? 'Listening' : 'Voice'}</span>
+            </button>
+
+            {/* 2. Image Search */}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageSearch}
+            />
+            <button
+              type="button"
+              onClick={() => imageInputRef.current?.click()}
+              className="h-7.5 px-2.5 rounded-full bg-black/[0.04] dark:bg-white/[0.08] text-[var(--text-primary)] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-[11.5px] font-medium flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 shadow-2xs"
+              title="Search by Image"
+            >
+              <Camera size={13} className="text-[#34C759]" />
+              <span>Image</span>
+            </button>
+
+            {/* 3. Ask AI */}
+            <button
+              type="button"
+              onClick={() => setQuery('Ask AI: ')}
+              className="h-7.5 px-3 rounded-full bg-[#007AFF] hover:bg-[#0069D9] text-white text-[11.5px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 shadow-2xs"
+              title="Ask AI Knowledge Engine"
+            >
+              <Sparkles size={12.5} />
+              <span>Ask AI</span>
+            </button>
+          </div>
         </div>
 
         {/* Dynamic Keywords Strip: Auto-detected from user's saved files */}
         <div className="px-4 py-2 bg-black/[0.02] dark:bg-white/[0.02] border-b border-black/[0.04] dark:border-white/[0.06] flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider shrink-0 mr-1">
-            Detected Keywords:
+          <span className="text-[10.5px] font-semibold text-[var(--text-muted)] uppercase tracking-wider shrink-0 mr-1">
+            Keywords:
           </span>
           {suggestedKeywords.map(({ keyword, matchedFilesCount }) => {
             const isSelected = query.toLowerCase() === keyword.toLowerCase();
@@ -256,105 +317,98 @@ export const SearchOverlayModal: React.FC = () => {
           })}
         </div>
 
-        {/* Results Container */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-3">
-          {/* If no query: Show Recent Saves */}
-          {!query && (
-            <div className="p-2 space-y-3">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                Recent Knowledge Files
-              </span>
-              <div className="space-y-1">
-                {items.slice(0, 5).map(item => (
-                  <div
-                    key={item.id}
-                    onClick={() => handleSelectItem(item)}
-                    className="flex items-center justify-between p-2 rounded-[8px] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] cursor-pointer transition-colors"
+        {/* Search Results / Suggestions List */}
+        <div className="flex-1 overflow-y-auto no-scrollbar p-2 space-y-1">
+          {query.trim() === '' ? (
+            /* Prompt Suggestions when empty */
+            <div className="py-8 px-4 text-center space-y-3">
+              <p className="text-[12.5px] text-[var(--text-muted)]">
+                Try asking a question, speaking via voice, or selecting a suggestion:
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 max-w-md mx-auto">
+                {[
+                  "Summarize my recent reads",
+                  "Find minimalist architecture",
+                  "What design systems are saved?",
+                  "Restaurants in Kochi"
+                ].map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => setQuery(prompt)}
+                    className="px-3 py-1.5 rounded-[8px] bg-black/[0.03] dark:bg-white/[0.05] hover:bg-[#007AFF]/10 text-[var(--text-secondary)] hover:text-[#007AFF] text-[12px] font-medium transition-colors cursor-pointer"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Clock size={13} className="text-[var(--text-muted)] shrink-0" />
-                      <span className="text-[13px] text-[var(--text-primary)] truncate">{item.title}</span>
-                    </div>
-                    <SwiftBadge variant="subtle">{item.category}</SwiftBadge>
-                  </div>
+                    "{prompt}"
+                  </button>
                 ))}
               </div>
             </div>
-          )}
-
-          {/* If query entered: Display matches with detected keyword highlight */}
-          {query && searchResults.length > 0 && (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between px-2 text-[11px] font-medium text-[var(--text-muted)]">
-                <span>{searchResults.length} {searchResults.length === 1 ? 'file' : 'files'} matching "{query}"</span>
-                <span className="text-[#007AFF]">Ranked by relevance</span>
-              </div>
-
-              {searchResults.map(({ item, matchedKeyword }) => (
-                <div
-                  key={item.id}
-                  onClick={() => handleSelectItem(item)}
-                  className="flex items-start gap-3 p-3 rounded-[9px] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] border border-transparent hover:border-black/[0.06] dark:hover:border-white/[0.08] cursor-pointer transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-[6px] bg-black/[0.04] dark:bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5 overflow-hidden">
+          ) : searchResults.length > 0 ? (
+            searchResults.map(({ item, matchedKeyword }) => (
+              <div
+                key={item.id}
+                onClick={() => handleSelectItem(item)}
+                className="group p-2.5 rounded-[9px] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] flex items-center justify-between gap-3 cursor-pointer transition-colors select-none"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-[6px] bg-black/[0.04] dark:bg-white/[0.06] flex items-center justify-center shrink-0 overflow-hidden">
                     {item.favicon ? (
-                      <img src={item.favicon} alt="" className="w-4 h-4 object-contain" />
+                      <img 
+                        src={item.favicon} 
+                        alt="" 
+                        className="w-4 h-4 object-contain"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
                     ) : (
-                      <Tag size={13} className="text-[#007AFF]" />
+                      <span className="text-[11px] font-bold text-[var(--text-muted)]">
+                        {item.sourceDomain.slice(0, 2).toUpperCase()}
+                      </span>
                     )}
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-[13.5px] font-semibold text-[var(--text-primary)] truncate">
-                        {item.title}
-                      </h4>
-                      {matchedKeyword && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#007AFF]/10 text-[#007AFF] font-medium shrink-0">
-                          {matchedKeyword}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[12px] text-[var(--text-secondary)] line-clamp-1 mt-0.5">
+                  <div className="min-w-0">
+                    <h4 className="text-[13.5px] font-medium text-[var(--text-primary)] truncate group-hover:text-[#007AFF] dark:group-hover:text-[#0A84FF]">
+                      {item.title}
+                    </h4>
+                    <p className="text-[11.5px] text-[var(--text-secondary)] truncate">
                       {item.description}
                     </p>
-                    <div className="flex items-center gap-2 mt-1 text-[11px] text-[var(--text-muted)]">
-                      <span>{item.sourceDomain}</span>
-                      <span>•</span>
-                      <span>{item.category}</span>
-                      {item.tags.length > 0 && (
-                        <>
-                          <span>•</span>
-                          <span className="truncate max-w-[200px]">#{item.tags.slice(0, 3).join(' #')}</span>
-                        </>
-                      )}
-                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
 
-          {/* No results */}
-          {query && searchResults.length === 0 && (
+                <div className="flex items-center gap-2 shrink-0">
+                  {matchedKeyword && (
+                    <SwiftBadge variant="subtle" className="text-[10.5px]">
+                      {matchedKeyword}
+                    </SwiftBadge>
+                  )}
+                  <ArrowRight size={13} className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            ))
+          ) : (
             <div className="py-12 text-center space-y-2">
-              <Search size={24} className="mx-auto text-[var(--text-muted)] opacity-40" />
-              <p className="text-[13.5px] font-medium text-[var(--text-primary)]">No matching files</p>
-              <p className="text-[12px] text-[var(--text-secondary)] max-w-sm mx-auto">
-                No saved files contain "{query}". Try checking your spelling or clicking a detected keyword chip above.
+              <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">
+                No matches found for "{query}"
+              </p>
+              <p className="text-[12px] text-[var(--text-muted)]">
+                Try searching for other keywords, categories, or speak via Voice Search.
               </p>
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-4 py-2 border-t border-black/[0.06] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-          <div className="flex items-center gap-2">
-            <span>Voice & Keyword Search Enabled</span>
+        {/* Footer shortcuts */}
+        <div className="px-4 py-2 border-t border-black/[0.06] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.02] flex items-center justify-between text-[11px] text-[var(--text-muted)] select-none">
+          <div className="flex items-center gap-3">
+            <span><kbd className="px-1 py-0.5 rounded bg-black/[0.06] dark:bg-white/[0.08] font-mono text-[9px]">↵</kbd> Select</span>
+            <span><kbd className="px-1 py-0.5 rounded bg-black/[0.06] dark:bg-white/[0.08] font-mono text-[9px]">esc</kbd> Dismiss</span>
           </div>
-          <span>Collectly Index</span>
+          <span>Collectly Spotlight</span>
         </div>
       </div>
     </div>
   );
 };
+
+export default SearchOverlayModal;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+  Search,
   Bell, 
   Sun, 
   Moon, 
@@ -16,9 +17,11 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileNav,
 }) => {
   const { 
+    activeScreen,
     user,
     theme,
     setTheme,
+    setIsSearchModalOpen,
     setIsAuthModalOpen,
     showToast
   } = useCollectly();
@@ -36,11 +39,25 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* 2. Right System Toolbar: Only Notifications, Dark/Light Mode Toggle, and Profile Avatar */}
+      {/* 2. Right System Toolbar */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
+        {/* Quick Search Icon: Shown on all pages EXCEPT Dashboard */}
+        {activeScreen !== 'dashboard' && (
+          <button
+            type="button"
+            onClick={() => setIsSearchModalOpen(true)}
+            className="w-8 h-8 flex items-center justify-center rounded-[7px] text-[var(--text-secondary)] hover:text-[#007AFF] dark:hover:text-[#0A84FF] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+            title="Search by text, voice, or image (⌘K)"
+            aria-label="Quick Search"
+          >
+            <Search size={16} strokeWidth={2.2} />
+          </button>
+        )}
+
         {/* Notifications Bell */}
         <div className="relative">
           <button
+            type="button"
             onClick={() => showToast('Notifications', 'All your Instagram and Google saves are up to date.', 'info')}
             className="w-8 h-8 flex items-center justify-center rounded-[7px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
             title="Notifications"
@@ -52,6 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Dark & White Mode Toggle (Always accessible on all screen sizes) */}
         <button
+          type="button"
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className="w-8 h-8 flex items-center justify-center rounded-[7px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
           title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
@@ -61,6 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Profile Avatar (Opens Profile & Account Details Modal) */}
         <button 
+          type="button"
           onClick={() => setIsAuthModalOpen(true)}
           className="w-7.5 h-7.5 rounded-full bg-gradient-to-tr from-[#007AFF] to-[#5856D6] text-white flex items-center justify-center font-bold text-[11.5px] cursor-pointer shadow-xs active:scale-95 transition-transform ml-1"
           title="Open Profile & Sync Details"
