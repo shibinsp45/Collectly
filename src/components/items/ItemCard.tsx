@@ -71,80 +71,78 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     ? `${item.category}, ${secondaryTags.join(', ')}`
     : item.category;
 
-  // ==========================================
-  // LIST VIEW ROW
-  // ==========================================
+  // ==============================================================
+  // LIST VIEW TILE CARD (Apple / Raycast 3-Column Compact Grid Tile)
+  // ==============================================================
   if (viewMode === 'list') {
     return (
       <div
         onClick={handleClick}
         className={clsx(
-          "group relative flex items-center gap-3.5 px-3.5 py-2.5 rounded-[12px] cursor-pointer transition-all duration-150 select-none",
-          "bg-white dark:bg-[#1E1E22] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]",
-          "border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.16] dark:hover:border-white/[0.18]",
-          item.isPinned && "ring-1 ring-[#007AFF]/40"
+          "group relative flex items-center justify-between gap-3 p-2.5 sm:p-3 rounded-[14px] cursor-pointer transition-all duration-150 select-none",
+          "bg-white dark:bg-[#1E1E22] hover:bg-[#FBFBFC] dark:hover:bg-[#25252A]",
+          "border border-black/[0.07] dark:border-white/[0.08] hover:border-black/[0.18] dark:hover:border-white/[0.2]",
+          "shadow-2xs hover:shadow-[0_4px_16px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.3)]",
+          item.isPinned && "bg-[#007AFF]/[0.06] dark:bg-[#0A84FF]/[0.12] border-[#007AFF]/40 ring-1 ring-[#007AFF]/30"
         )}
       >
-        {/* Source Icon / Favicon */}
-        <div className="w-6 h-6 rounded-[5px] bg-black/[0.04] dark:bg-white/[0.06] flex items-center justify-center shrink-0 overflow-hidden">
-          {item.favicon ? (
-            <img 
-              src={item.favicon} 
-              alt="" 
-              className="w-4 h-4 object-contain" 
-              onError={(e) => { e.currentTarget.style.display = 'none'; }} 
-            />
-          ) : isInstagram ? (
-            <InstagramIcon size={13} className="text-[#E1306C]" />
-          ) : (
-            <span className="text-[10px] font-bold text-[var(--text-muted)]">
-              {item.sourceDomain.charAt(0).toUpperCase()}
-            </span>
-          )}
-        </div>
-
-        {/* Title & Preview */}
-        <div className="flex-1 min-w-0 flex items-center gap-2">
-          <span className="text-[13.5px] font-semibold text-[var(--text-primary)] truncate group-hover:text-[#007AFF] dark:group-hover:text-[#0A84FF] transition-colors">
-            {item.title}
-          </span>
-          {isInstagram && (
-            <span className="text-[9.5px] font-semibold text-[#E1306C] px-1.5 py-0.2 rounded bg-[#E1306C]/10 shrink-0">
-              Instagram
-            </span>
-          )}
-        </div>
-
-        {/* Metadata info */}
-        <div className="hidden md:flex items-center gap-3 shrink-0 text-[11.5px] text-[var(--text-muted)]">
-          <span className="truncate max-w-[130px]">{item.sourceDomain}</span>
-          <div className="flex items-center gap-1">
-            <Tag size={11} className="shrink-0 opacity-70" />
-            <span className="truncate max-w-[120px]">{item.category}</span>
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+          {/* App / Source Squircle Icon on Left */}
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[10px] bg-black/[0.03] dark:bg-white/[0.06] border border-black/[0.05] dark:border-white/[0.06] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+            {isInstagram ? (
+              <div className="w-full h-full bg-gradient-to-tr from-[#FD1D1D] via-[#E1306C] to-[#833AB4] flex items-center justify-center text-white">
+                <InstagramIcon size={18} strokeWidth={2.2} />
+              </div>
+            ) : item.favicon ? (
+              <img 
+                src={item.favicon} 
+                alt="" 
+                className="w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain" 
+                onError={(e) => { e.currentTarget.style.display = 'none'; }} 
+              />
+            ) : (
+              <span className="text-[12px] font-bold text-[var(--text-secondary)]">
+                {item.sourceDomain.slice(0, 2).toUpperCase()}
+              </span>
+            )}
           </div>
-          <span className="text-[11px]">{formattedDate}</span>
+
+          {/* Title & URL Stack */}
+          <div className="min-w-0 flex-1 space-y-0.5">
+            <h4 className="text-[13px] sm:text-[13.5px] font-semibold text-[var(--text-primary)] truncate leading-tight group-hover:text-[#007AFF] dark:group-hover:text-[#0A84FF] transition-colors">
+              {item.title}
+            </h4>
+            <p className="text-[11px] text-[var(--text-muted)] truncate leading-tight font-normal">
+              {item.url || item.sourceDomain}
+            </p>
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Action button on right (Quick Pin & Open) */}
+        <div 
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
           {item.url && (
             <button
               onClick={handleOpenExternal}
-              className="p-1 rounded-[5px] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] text-[var(--text-secondary)] cursor-pointer"
-              title="Open Source Link"
+              className="w-6.5 h-6.5 rounded-full bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/80 hover:text-white dark:hover:bg-white dark:hover:text-black flex items-center justify-center text-[var(--text-secondary)] transition-all cursor-pointer shadow-2xs"
+              title="Open link"
             >
-              <ExternalLink size={13} />
+              <ExternalLink size={12} strokeWidth={2} />
             </button>
           )}
           <button
             onClick={handleTogglePin}
             className={clsx(
-              "p-1 rounded-[5px] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] cursor-pointer",
-              item.isPinned ? "text-[#007AFF]" : "text-[var(--text-secondary)]"
+              "w-6.5 h-6.5 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-2xs",
+              item.isPinned 
+                ? "bg-[#007AFF] text-white" 
+                : "bg-black/[0.05] dark:bg-white/[0.1] text-[var(--text-secondary)] hover:bg-[#007AFF] hover:text-white"
             )}
             title={item.isPinned ? "Unpin" : "Pin"}
           >
-            <Pin size={13} fill={item.isPinned ? "currentColor" : "none"} />
+            <Pin size={11} fill={item.isPinned ? "currentColor" : "none"} strokeWidth={2} />
           </button>
         </div>
       </div>

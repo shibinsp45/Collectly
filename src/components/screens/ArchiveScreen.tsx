@@ -45,7 +45,7 @@ export const ArchiveScreen: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="space-y-1.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
             {archivedItems.map(item => (
               <ItemCard key={item.id} item={item} viewMode="list" />
             ))}

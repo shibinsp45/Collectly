@@ -1,92 +1,114 @@
-# Collectly 
+<div align="center">
 
-> **Save everything. Find anything.**  
-> A premium AI-powered personal knowledge management web application inspired by **Notion**'s structured hierarchy, **Linear**'s interface precision, **Folo**'s content discovery, and **Apple's SwiftUI** visual refinement.
+# ✦ Collectly
 
----
+### *Save everything. Find anything.*
 
-## 🧭 Design System & SwiftUI Aesthetics
+A personal AI-powered knowledge engine and visual bookmarking platform inspired by Apple's minimalist design, Linear's speed, and Raycast's efficiency.
 
-- **Restrained Apple Glass Materials**: Subtle translucency (`backdrop-blur: 24px`, specular hairline borders) on sidebars, top navigation bars, dynamic island notifications, modal sheets, and the Spotlight search overlay.
-- **Solid Content Surfaces**: Knowledge cards maintain solid background fills (`#FFFFFF` in light mode, `#1C1C1E` in dark mode) for maximum readability without unreadable blur stacking.
-- **Apple Typography & Radii**:
-  - Native system font stack: `-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI"`
-  - Squircle continuous corners: controls (8px), inputs (10px), cards (12px), dialogs (18px), pills (999px)
-  - Apple system color palette: `#007AFF` / `#0A84FF` San Francisco blue, `#34C759` mint green, `#5856D6` purple, `#FF9500` orange.
-- **Consistent Lucide Iconography**: 16px/18px sizing, 1.8–2.0px stroke weight, zero emoji-as-icon clutter.
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
 
-## 🚀 10 Core Fully Functional Screens
+</div>
 
-1. **Dashboard (Home)**:
-   - Time-sensitive greeting ("Good morning / afternoon / evening, Jeflin")
-   - Real-time knowledge metrics (Total saves, collections, categories, weekly influx)
-   - Frequently accessed items (driven by actual visit counts)
-   - Chronological recent saves stream
-   - Curated collections grid
-   - Category discovery pills
-2. **All Saves**:
-   - Filter by content type (*Articles, Videos, Design, Notes, Locations, Social, Learning*)
-   - Filter by category & active tag
-   - Sort by Newest, Oldest, Title (A-Z), and Most Visited
-   - Responsive Grid View vs. High-Precision Linear-style Compact List View
-3. **Capture & Add Modal**:
-   - SwiftUI-style segmented mode switcher (*Link / URL, Note / Text, Location*)
-   - Instant non-blocking save with asynchronous simulated AI auto-classification and tag extraction
-4. **Spotlight AI Search (⌘K / Ctrl+K)**:
-   - Natural language query understanding (e.g. *"Where is that restaurant I saved in Kochi?"*, *"Show me articles about AI product design"*)
-   - Keyword token matching + semantic entity recognition
-   - Relevance ranking badges
-5. **Item Details Inspector**:
-   - macOS-style side inspector panel & mobile sheet
-   - Apple Intelligence summary card with key takeaways
-   - Source identity favicon, external link launcher, and link copier
-   - In-place title, description, and metadata editor
-   - Pin, archive, and delete operations
-6. **Collections Management**:
-   - Thematic spaces with custom color pickers and item counters
-   - Create, edit, and delete collections
-   - Drill-down into individual collection detail views
-7. **Category Management**:
-   - Domain taxonomy management (Design, Technology, Learning, Business, Travel & Places, Personal, Media, Uncategorised)
-   - Add custom categories and rename existing ones
-8. **Recently Saved**:
-   - Chronological timeline view of all saves with relative time indicators
-9. **Archive**:
-   - Separated archived knowledge references with one-click restore or permanent deletion
-10. **Settings**:
-    - Account profile preview with Pro Plan status
-    - Native Apple Appearance switcher: Light, Dark, System
-    - Default Content View preference (Cards vs. Compact List)
-    - Apple Intelligence toggles (Auto-classification, Key takeaways, Tag suggestions, Semantic search)
-    - Full Data Export: One-click JSON and CSV export file downloads
-    - Cache & reset demo data capabilities
+## ✨ Key Features
+
+### 🔍 Unified AI Search Engine
+- **All-in-One Prompt Box**: Ask AI questions in natural language, search by text, speak via voice, or drop an image.
+- **🎙️ Real-time Voice Search**: Speak queries naturally with integrated browser speech recognition.
+- **📷 Visual Image Search**: Drop or upload screenshots, designs, and photos to find matching visual references.
+- **⌘K Spotlight Overlay**: Fast modal launcher accessible anywhere with keyboard shortcut `⌘K` or `Ctrl+K`.
+
+### 📱 Connected Social & Cloud Sync
+- **Instagram Saves Sync**: Effortlessly organize your saved Instagram reels, carousels, and design posts with native Instagram branding.
+- **Google Starred Places & Saves**: Sync starred locations, articles, and bookmarks under organized collections.
+- **Web Share Target Support**: Save links, articles, and photos directly from your phone's share sheet.
+
+### 🎨 Dual Visual Layouts
+- **16:10 Visual Cards Grid**: High-fidelity media covers, floating preview bubbles (`👁️ Preview`, `↗ Open`, `🗑️ Delete`), domain metadata, and tag footers.
+- **Compact Tile List View**: Sleek 3-column horizontal tile layout inspired by modern desktop launchers—features app squircle icons, domain paths, and quick pin toggles.
+
+### 📂 Smart Organization & Taxonomies
+- **Thematic Collections**: Group knowledge into custom collections with personalized color codes and real-time item counts.
+- **Domain Categories**: Tidy categorization across Design, Technology, Instagram, Learning, Business, and Travel.
+- **Collapsible Sidebar Accordions**: Clean, clutter-free navigation with collapsible Collections and Categories sections.
+
+### 🌗 Adaptive Design & Offline First
+- **Apple Dark & Light Modes**: Seamless system appearance switching with neutral gray scales and specular glass materials.
+- **Zero AI Slop**: Thoughtfully crafted typography, consistent SVG iconography, and zero decorative clutter.
+- **Offline & Private**: Built on fast local browser storage with zero latency and full JSON/CSV data export.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 🚀 Quick Install Guide
 
-- **React 19** + **TypeScript** + **Vite**
-- **Tailwind CSS v4** + `@tailwindcss/vite`
-- **Lucide React** (Apple-compatible stroke icons)
-- **Local Persistent Storage** with automatic sync
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) (v18+) or [Bun](https://bun.sh/) installed on your machine.
 
----
-
-## 💻 Running Locally
-
+### 1. Clone the repository
 ```bash
-# Navigate to project
+git clone https://github.com/shibinsp45/Collectly.git
 cd Collectly
-
-# Install dependencies (using Bun or npm)
-bun install
-# or: npm install
-
-# Start Vite dev server
-bun run dev
-# or: npm run dev
 ```
 
-App will run at `http://localhost:5173`.
+### 2. Install dependencies
+Using **Bun** (recommended for fastest install):
+```bash
+bun install
+```
+
+Or using **npm**:
+```bash
+npm install
+```
+
+### 3. Start the development server
+```bash
+bun run dev
+# or
+npm run dev
+```
+
+Open your browser and navigate to:
+```
+http://localhost:5173
+```
+
+---
+
+## 📦 Building for Production
+
+To create an optimized production build:
+
+```bash
+bun run build
+# or
+npm run build
+```
+
+Preview the production build locally:
+```bash
+bun run preview
+# or
+npm run preview
+```
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+| :--- | :--- |
+| <kbd>⌘</kbd> + <kbd>K</kbd> / <kbd>Ctrl</kbd> + <kbd>K</kbd> | Open Spotlight AI Search |
+| <kbd>Esc</kbd> | Close active modal or sheet |
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
