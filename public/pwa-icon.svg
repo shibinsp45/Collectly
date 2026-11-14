@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A84FF" />
+      <stop offset="100%" stop-color="#0062cc" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#grad)" filter="url(#shadow)"/>
+  <!-- Collectly Bookmark Layer Stack -->
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M160 148h192M160 220h140M160 292h192" stroke-width="32"/>
+    <path d="M160 364h100" stroke-width="32"/>
+    <!-- Star/Sparkle for AI Intelligence -->
+    <path d="M370 270l14 36 36 14-36 14-14 36-14-36-36-14 36-14z" fill="#FFFFFF" stroke="none"/>
+  </g>
+</svg>
