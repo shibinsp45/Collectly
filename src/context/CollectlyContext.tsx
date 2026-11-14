@@ -38,6 +38,9 @@ interface CollectlyContextType {
   disconnectInstagram: () => void;
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
+  isOnboardingOpen: boolean;
+  setIsOnboardingOpen: (open: boolean) => void;
+  updateUserProfile: (name: string, email?: string, avatar?: string) => void;
 
   // Syncing
   isSyncingInstagram: boolean;
@@ -150,6 +153,22 @@ export const CollectlyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   });
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+
+  const updateUserProfile = (name: string, email?: string, avatar?: string) => {
+    setUser(prev => {
+      const updated = {
+        ...prev,
+        name: name.trim() || prev.name,
+        email: email?.trim() || prev.email,
+        avatar: avatar || name.trim().charAt(0).toUpperCase() || prev.avatar
+      };
+      try {
+        localStorage.setItem('collectly_user_v2', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
   const [isSyncingInstagram, setIsSyncingInstagram] = useState(false);
   const [isSyncingGoogle, setIsSyncingGoogle] = useState(false);
 
@@ -694,6 +713,9 @@ export const CollectlyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         disconnectInstagram,
         isAuthModalOpen,
         setIsAuthModalOpen,
+        isOnboardingOpen,
+        setIsOnboardingOpen,
+        updateUserProfile,
         isSyncingInstagram,
         isSyncingGoogle,
         syncInstagramSaves,

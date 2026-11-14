@@ -43,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setSelectedCategoryId,
     setIsAddModalOpen,
     setSelectedTypeFilter,
+    setIsOnboardingOpen,
     theme,
     setTheme
   } = useCollectly();
@@ -97,14 +98,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Logo & Name (Always visible when expanded and on mobile!) */}
           {!isRail ? (
             <div 
-              onClick={() => handleNav('dashboard')}
-              className="flex items-center gap-2.5 cursor-pointer"
+              onClick={() => {
+                setIsOnboardingOpen(true);
+                setIsMobileOpen(false);
+              }}
+              className="flex items-center gap-2.5 cursor-pointer group"
+              title="Collectly Setup & Onboarding"
             >
-              <div className="w-6 h-6 rounded-[5px] bg-[#007AFF] text-white flex items-center justify-center font-bold text-[11px] shadow-2xs">
+              <div className="w-6 h-6 rounded-[5px] bg-[#007AFF] text-white flex items-center justify-center font-bold text-[11px] shadow-2xs group-hover:scale-105 transition-transform">
                 C
               </div>
               <div className="flex flex-col">
-                <span className="text-[14px] font-bold text-[var(--text-primary)] tracking-tight leading-tight">
+                <span className="text-[14px] font-bold text-[var(--text-primary)] tracking-tight leading-tight group-hover:text-[#007AFF] transition-colors">
                   Collectly
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)] font-medium">Personal Knowledge</span>

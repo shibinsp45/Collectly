@@ -20,6 +20,7 @@ import { ItemDetailsPanel } from './components/items/ItemDetailsPanel';
 import { AddItemModal } from './components/screens/AddItemModal';
 import { SearchOverlayModal } from './components/screens/SearchOverlayModal';
 import { AuthConnectModal } from './components/screens/AuthConnectModal';
+import { OnboardingModal } from './components/screens/OnboardingModal';
 import { AppleToastContainer } from './components/ui/AppleToastContainer';
 import { clsx } from 'clsx';
 
@@ -102,6 +103,9 @@ const MainAppContent: React.FC = () => {
 
       {/* Google ID & Instagram ID Connect & Sync Modal */}
       <AuthConnectModal />
+
+      {/* Mobile & First-Time Onboarding Experience */}
+      <OnboardingModal />
     </div>
   );
 };

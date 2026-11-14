@@ -23,19 +23,31 @@ export const Header: React.FC<HeaderProps> = ({
     setTheme,
     setIsSearchModalOpen,
     setIsAuthModalOpen,
+    setIsOnboardingOpen,
     showToast
   } = useCollectly();
 
   return (
     <header className="sticky top-0 z-30 h-12 px-3 sm:px-4 bg-[#F5F5F7]/95 dark:bg-[#121214]/95 backdrop-blur-md border-b border-black/[0.08] dark:border-white/[0.07] flex items-center justify-between gap-2 select-none text-[var(--text-primary)]">
-      {/* 1. Left Navigation Menu Toggle (Mobile) */}
-      <div className="flex items-center shrink-0">
+      {/* 1. Left Navigation Menu Toggle & Mobile App Icon */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <button
+          type="button"
           onClick={onToggleMobileNav}
           className="md:hidden w-8 h-8 flex items-center justify-center rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer"
           aria-label="Open navigation menu"
         >
           <Menu size={18} />
+        </button>
+
+        {/* Mobile App Icon: Clicking opens onboarding & setup options! */}
+        <button
+          type="button"
+          onClick={() => setIsOnboardingOpen(true)}
+          className="md:hidden w-6.5 h-6.5 rounded-[6px] bg-[#007AFF] text-white flex items-center justify-center font-bold text-[11.5px] shadow-2xs active:scale-95 transition-transform cursor-pointer"
+          title="Collectly Setup & Onboarding"
+        >
+          C
         </button>
       </div>
 
