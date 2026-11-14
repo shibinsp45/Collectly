@@ -20,6 +20,7 @@ import {
 import { useCollectly } from '../../context/CollectlyContext';
 import { extractSavedKeywords } from '../../lib/keywordService';
 import { ItemCard } from '../items/ItemCard';
+import { InstagramIcon } from '../ui/InstagramIcon';
 import { clsx } from 'clsx';
 
 export const DashboardScreen: React.FC = () => {
@@ -44,7 +45,7 @@ export const DashboardScreen: React.FC = () => {
   const tabs = [
     { id: 'your-saves', label: 'Your saves', icon: Bookmark },
     { id: 'all-items', label: 'All items', icon: LayoutGrid },
-    { id: 'instagram', label: 'Instagram', icon: Share2 },
+    { id: 'instagram', label: 'Instagram', icon: InstagramIcon },
     { id: 'google', label: 'Google Saves', icon: MapPin },
     { id: 'articles', label: 'Articles', icon: FileText },
     { id: 'videos', label: 'Videos', icon: Video },
@@ -274,8 +275,8 @@ export const DashboardScreen: React.FC = () => {
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-[8px] bg-[#001E36] border border-[#31A8FF]/40 text-[#31A8FF] flex items-center justify-center font-bold text-[12px] shrink-0">
-                        In
+                      <div className="w-8 h-8 rounded-[8px] bg-gradient-to-tr from-[#FD1D1D] via-[#E1306C] to-[#833AB4] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                        <InstagramIcon size={17} strokeWidth={2.2} />
                       </div>
                       <div>
                         <h4 className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug">

@@ -1,17 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { 
-  Search, 
-  Mic, 
-  MicOff, 
   Bell, 
   Cloud, 
   Sun, 
   Moon, 
-  Menu,
-  Check
+  Menu
 } from 'lucide-react';
 import { useCollectly } from '../../context/CollectlyContext';
-import { clsx } from 'clsx';
 
 interface HeaderProps {
   onToggleMobileNav: () => void;
@@ -25,60 +20,9 @@ export const Header: React.FC<HeaderProps> = ({
     user,
     theme,
     setTheme,
-    setIsSearchModalOpen,
-    setSearchQuery,
     setIsAuthModalOpen,
     showToast
   } = useCollectly();
-
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
-
-  // Initialize Speech Recognition for Voice Search in the top pill bar
-  useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = () => setIsListening(true);
-      recognition.onresult = (event: any) => {
-        const transcript = Array.from(event.results)
-          .map((result: any) => result[0])
-          .map((result: any) => result.transcript)
-          .join('');
-        setSearchQuery(transcript);
-        setIsSearchModalOpen(true);
-      };
-      recognition.onerror = () => setIsListening(false);
-      recognition.onend = () => setIsListening(false);
-
-      recognitionRef.current = recognition;
-    }
-  }, [setSearchQuery, setIsSearchModalOpen]);
-
-  const handleVoiceClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!recognitionRef.current) {
-      showToast('Voice Search', 'Voice search opened. Speak or type your search query.', 'info');
-      setIsSearchModalOpen(true);
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch {
-        setIsSearchModalOpen(true);
-      }
-    }
-  };
 
   return (
     <header className="sticky top-0 z-30 h-12 px-2.5 sm:px-4 bg-[#F5F5F7]/95 dark:bg-[#121214]/95 backdrop-blur-md border-b border-black/[0.08] dark:border-white/[0.07] flex items-center justify-between gap-2 sm:gap-3 select-none text-[var(--text-primary)]">
@@ -93,45 +37,8 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* 2. Center Pill Search Bar (Full Width & Clean) */}
-      <div className="flex-1 max-w-xl mx-1 sm:mx-4 min-w-0">
-        <div 
-          onClick={() => setIsSearchModalOpen(true)}
-          className="w-full h-8.5 sm:h-8 px-3 rounded-full bg-black/[0.04] dark:bg-[#1E1E22] hover:bg-black/[0.08] dark:hover:bg-[#25252A] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between gap-2 cursor-pointer transition-colors shadow-2xs"
-        >
-          <div className="flex items-center gap-2 text-[var(--text-muted)] min-w-0 flex-1">
-            <Search size={13.5} className="shrink-0 text-[#007AFF]" />
-            <span className="text-[12.5px] truncate hidden sm:inline">
-              Search Collectly, voice, keywords...
-            </span>
-            <span className="text-[12.5px] truncate sm:hidden">
-              Search...
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Voice Search Button */}
-            <button
-              onClick={handleVoiceClick}
-              className={clsx(
-                "w-6 h-6 rounded-full transition-all cursor-pointer flex items-center justify-center",
-                isListening 
-                  ? "bg-[#D92D20] text-white animate-pulse" 
-                  : "text-[var(--text-muted)] hover:text-[#007AFF] hover:bg-black/[0.05] dark:hover:bg-white/10"
-              )}
-              title={isListening ? "Listening..." : "Search via voice"}
-            >
-              {isListening ? <MicOff size={12.5} /> : <Mic size={12.5} />}
-            </button>
-            <kbd className="hidden md:inline-flex px-1.5 py-0.2 rounded text-[9.5px] bg-black/[0.06] dark:bg-white/[0.08] font-mono text-[var(--text-muted)]">
-              ⌘K
-            </kbd>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Right System Status & Window Controls (Aligned on Mobile) */}
-      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+      {/* 2. Right System Status & Controls */}
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto">
         {/* Connected Accounts indicator (Desktop only) */}
         <button
           onClick={() => setIsAuthModalOpen(true)}
@@ -142,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span>{user.name}</span>
         </button>
 
-        {/* Cloud Sync Icon (Desktop/Tablet only to avoid mobile crowding) */}
+        {/* Cloud Sync Icon */}
         <button
           onClick={() => setIsAuthModalOpen(true)}
           className="hidden sm:flex w-7 h-7 items-center justify-center rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
@@ -163,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#D92D20] rounded-full" />
         </div>
 
-        {/* Theme Toggle (Desktop/Tablet only; accessible on mobile in Settings & Drawer) */}
+        {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className="hidden sm:flex w-7 h-7 items-center justify-center rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
@@ -184,3 +91,5 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+
+export default Header;

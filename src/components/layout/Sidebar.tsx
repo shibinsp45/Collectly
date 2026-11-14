@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   House, 
   Library, 
   Folder, 
-  Share2, 
   MapPin, 
   Plus, 
   Settings, 
@@ -11,8 +10,10 @@ import {
   X,
   Sun,
   Moon,
-  Laptop
+  Laptop,
+  ChevronRight
 } from 'lucide-react';
+import { InstagramIcon } from '../ui/InstagramIcon';
 import { useCollectly } from '../../context/CollectlyContext';
 import { ScreenId } from '../../types';
 import { clsx } from 'clsx';
@@ -46,6 +47,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setTheme
   } = useCollectly();
 
+  // Accordion state for Collections and Categories in sidebar - Collapsed by default!
+  const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false);
+  const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
+
   const handleNav = (screen: ScreenId) => {
     setActiveScreen(screen);
     setSelectedCollectionId(null);
@@ -61,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'dashboard' as ScreenId, label: 'Home', icon: House, onClick: () => handleNav('dashboard') },
     { id: 'all-saves' as ScreenId, label: 'Saves', icon: Library, onClick: () => { setSelectedTypeFilter('all'); handleNav('all-saves'); } },
     { id: 'collections' as ScreenId, label: 'Collections', icon: Folder, onClick: () => handleNav('collections') },
-    { id: 'all-saves' as ScreenId, label: 'Instagram', icon: Share2, onClick: () => { setSelectedTypeFilter('social'); handleNav('all-saves'); } },
+    { id: 'all-saves' as ScreenId, label: 'Instagram', icon: InstagramIcon, onClick: () => { setSelectedTypeFilter('social'); handleNav('all-saves'); } },
     { id: 'all-saves' as ScreenId, label: 'Google', icon: MapPin, onClick: () => { setSelectedTypeFilter('location'); handleNav('all-saves'); } },
   ];
 
@@ -219,86 +224,116 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Full Collections & Categories (Visible when expanded & on mobile!) */}
           {!isRail && (
-            <div className="pt-2 space-y-4">
-              <div>
-                <div className="px-3 flex items-center justify-between text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">
-                  <span>Collections</span>
+            <div className="pt-2 space-y-2">
+              {/* Collapsible Collections Accordion (Collapsed by default) */}
+              <div className="rounded-[8px] overflow-hidden">
+                <div 
+                  onClick={() => setIsCollectionsExpanded(prev => !prev)}
+                  className="px-2.5 py-1.5 flex items-center justify-between text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-[6px] transition-colors cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <ChevronRight 
+                      size={12} 
+                      className={clsx("transition-transform duration-200 shrink-0", isCollectionsExpanded && "rotate-90")} 
+                    />
+                    <span className="truncate">Collections</span>
+                    <span className="text-[10px] font-normal lowercase opacity-70">({collections.length})</span>
+                  </div>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleNav('collections');
                     }}
-                    className="hover:text-[var(--text-primary)] cursor-pointer lowercase text-[11px]"
+                    className="hover:text-[var(--text-primary)] cursor-pointer lowercase text-[11px] px-1 py-0.5 rounded hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+                    title="View all collections"
                   >
                     view all
                   </button>
                 </div>
-                <div className="mt-1.5 space-y-0.5">
-                  {collections.slice(0, 5).map(col => {
-                    const isSelected = selectedCollectionId === col.id;
-                    const count = items.filter(i => i.collectionId === col.id && !i.isArchived).length;
-                    return (
-                      <button
-                        key={col.id}
-                        onClick={() => {
-                          setSelectedCollectionId(col.id);
-                          setSelectedCategoryId(null);
-                          setActiveScreen('collection-detail');
-                          setIsMobileOpen(false);
-                        }}
-                        className={clsx(
-                          "w-full h-8 px-3 rounded-[7px] flex items-center gap-2.5 text-[12.5px] transition-colors cursor-pointer",
-                          isSelected 
-                            ? "bg-black/[0.08] dark:bg-white/[0.12] text-[var(--text-primary)] font-semibold" 
-                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
-                        )}
-                      >
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: col.color }} />
-                        <span className="truncate flex-1 text-left">{col.name}</span>
-                        <span className="text-[11px] text-[var(--text-muted)]">{count}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                {isCollectionsExpanded && (
+                  <div className="mt-1 space-y-0.5 pl-2 animate-in fade-in duration-150">
+                    {collections.slice(0, 5).map(col => {
+                      const isSelected = selectedCollectionId === col.id;
+                      const count = items.filter(i => i.collectionId === col.id && !i.isArchived).length;
+                      return (
+                        <button
+                          key={col.id}
+                          onClick={() => {
+                            setSelectedCollectionId(col.id);
+                            setSelectedCategoryId(null);
+                            setActiveScreen('collection-detail');
+                            setIsMobileOpen(false);
+                          }}
+                          className={clsx(
+                            "w-full h-8 px-2.5 rounded-[7px] flex items-center gap-2.5 text-[12.5px] transition-colors cursor-pointer",
+                            isSelected 
+                              ? "bg-black/[0.08] dark:bg-white/[0.12] text-[var(--text-primary)] font-semibold" 
+                              : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
+                          )}
+                        >
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: col.color }} />
+                          <span className="truncate flex-1 text-left">{col.name}</span>
+                          <span className="text-[11px] text-[var(--text-muted)]">{count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
-              <div>
-                <div className="px-3 flex items-center justify-between text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">
-                  <span>Categories</span>
+              {/* Collapsible Categories Accordion (Collapsed by default) */}
+              <div className="rounded-[8px] overflow-hidden">
+                <div 
+                  onClick={() => setIsCategoriesExpanded(prev => !prev)}
+                  className="px-2.5 py-1.5 flex items-center justify-between text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-[6px] transition-colors cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <ChevronRight 
+                      size={12} 
+                      className={clsx("transition-transform duration-200 shrink-0", isCategoriesExpanded && "rotate-90")} 
+                    />
+                    <span className="truncate">Categories</span>
+                    <span className="text-[10px] font-normal lowercase opacity-70">({categories.length})</span>
+                  </div>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleNav('categories');
                     }}
-                    className="hover:text-[var(--text-primary)] cursor-pointer lowercase text-[11px]"
+                    className="hover:text-[var(--text-primary)] cursor-pointer lowercase text-[11px] px-1 py-0.5 rounded hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+                    title="View all categories"
                   >
                     view all
                   </button>
                 </div>
-                <div className="mt-1.5 space-y-0.5">
-                  {categories.slice(0, 6).map(cat => {
-                    const isSelected = selectedCategoryId === cat.id;
-                    const count = items.filter(i => i.category.toLowerCase() === cat.name.toLowerCase() && !i.isArchived).length;
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          setSelectedCategoryId(cat.id);
-                          setSelectedCollectionId(null);
-                          setActiveScreen('category-detail');
-                          setIsMobileOpen(false);
-                        }}
-                        className={clsx(
-                          "w-full h-8 px-3 rounded-[7px] flex items-center gap-2 text-[12.5px] transition-colors cursor-pointer",
-                          isSelected 
-                            ? "bg-black/[0.08] dark:bg-white/[0.12] text-[var(--text-primary)] font-semibold" 
-                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
-                        )}
-                      >
-                        <span className="truncate flex-1 text-left">{cat.name}</span>
-                        <span className="text-[11px] text-[var(--text-muted)]">{count}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                {isCategoriesExpanded && (
+                  <div className="mt-1 space-y-0.5 pl-2 animate-in fade-in duration-150">
+                    {categories.slice(0, 6).map(cat => {
+                      const isSelected = selectedCategoryId === cat.id;
+                      const count = items.filter(i => i.category.toLowerCase() === cat.name.toLowerCase() && !i.isArchived).length;
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => {
+                            setSelectedCategoryId(cat.id);
+                            setSelectedCollectionId(null);
+                            setActiveScreen('category-detail');
+                            setIsMobileOpen(false);
+                          }}
+                          className={clsx(
+                            "w-full h-8 px-2.5 rounded-[7px] flex items-center gap-2 text-[12.5px] transition-colors cursor-pointer",
+                            isSelected 
+                              ? "bg-black/[0.08] dark:bg-white/[0.12] text-[var(--text-primary)] font-semibold" 
+                              : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
+                          )}
+                        >
+                          <span className="truncate flex-1 text-left">{cat.name}</span>
+                          <span className="text-[11px] text-[var(--text-muted)]">{count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
