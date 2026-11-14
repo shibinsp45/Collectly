@@ -7,9 +7,6 @@ import {
   Cloud, 
   Sun, 
   Moon, 
-  Minus, 
-  Square, 
-  X,
   Menu,
   Check
 } from 'lucide-react';
@@ -182,19 +179,6 @@ export const Header: React.FC<HeaderProps> = ({
           title="Profile & Sync Accounts"
         >
           {user.avatar || 'A'}
-        </div>
-
-        {/* Desktop Window Controls (Minimize, Maximize, Close like screenshot) */}
-        <div className="hidden lg:flex items-center gap-1.5 pl-2 border-l border-black/[0.08] dark:border-white/[0.08] text-[var(--text-muted)]">
-          <button className="p-1 hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] rounded cursor-pointer" title="Minimize">
-            <Minus size={11} />
-          </button>
-          <button className="p-1 hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] rounded cursor-pointer" title="Maximize">
-            <Square size={10} />
-          </button>
-          <button className="p-1 hover:text-[#D92D20] hover:bg-[#D92D20]/20 rounded cursor-pointer" title="Close">
-            <X size={12} />
-          </button>
         </div>
       </div>
     </header>
