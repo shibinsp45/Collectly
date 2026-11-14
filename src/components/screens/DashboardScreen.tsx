@@ -39,7 +39,11 @@ export const DashboardScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'your-saves' | 'all-items' | 'instagram' | 'google' | 'articles' | 'videos' | 'design' | 'notes'>('your-saves');
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  const activeItems = items.filter(i => !i.isArchived);
+  const activeItems = [...items.filter(i => !i.isArchived)].sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return new Date(b.dateSaved).getTime() - new Date(a.dateSaved).getTime();
+  });
   const savedKeywords = extractSavedKeywords(items).slice(0, 8);
 
   const tabs = [

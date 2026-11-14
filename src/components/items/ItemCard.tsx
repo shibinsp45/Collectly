@@ -5,7 +5,8 @@ import {
   Pin, 
   Eye,
   Tag,
-  RotateCcw
+  RotateCcw,
+  Pencil
 } from 'lucide-react';
 import { SavedItem, ViewMode } from '../../types';
 import { useCollectly } from '../../context/CollectlyContext';
@@ -35,6 +36,12 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     setSelectedItem(item);
   };
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    recordItemVisit(item.id);
+    setSelectedItem(item);
+  };
+
   const handleOpenExternal = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (item.url) {
@@ -52,6 +59,11 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   const handleTogglePin = (e: React.MouseEvent) => {
     e.stopPropagation();
     togglePinItem(item.id);
+    showToast(
+      item.isPinned ? 'Post Unpinned' : 'Post Pinned',
+      item.isPinned ? `"${item.title}" removed from pinned.` : `"${item.title}" pinned to the top!`,
+      'success'
+    );
   };
 
   // Format date like reference UI: "Mar 12, 2026"
@@ -118,13 +130,25 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           </div>
         </div>
 
-        {/* Action button on right (Quick Pin & Open) */}
+        {/* Action buttons on right (Edit, External Link, Pin/Unpin) */}
         <div 
           onClick={(e) => e.stopPropagation()}
           className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
         >
+          {/* Edit Post Button */}
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="w-6.5 h-6.5 rounded-full bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/80 hover:text-white dark:hover:bg-white dark:hover:text-black flex items-center justify-center text-[var(--text-secondary)] transition-all cursor-pointer shadow-2xs"
+            title="Edit post"
+          >
+            <Pencil size={11} strokeWidth={2} />
+          </button>
+
+          {/* Open Link */}
           {item.url && (
             <button
+              type="button"
               onClick={handleOpenExternal}
               className="w-6.5 h-6.5 rounded-full bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/80 hover:text-white dark:hover:bg-white dark:hover:text-black flex items-center justify-center text-[var(--text-secondary)] transition-all cursor-pointer shadow-2xs"
               title="Open link"
@@ -132,7 +156,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
               <ExternalLink size={12} strokeWidth={2} />
             </button>
           )}
+
+          {/* Pin / Unpin Button */}
           <button
+            type="button"
             onClick={handleTogglePin}
             className={clsx(
               "w-6.5 h-6.5 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-2xs",
@@ -140,7 +167,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 ? "bg-[#007AFF] text-white" 
                 : "bg-black/[0.05] dark:bg-white/[0.1] text-[var(--text-secondary)] hover:bg-[#007AFF] hover:text-white"
             )}
-            title={item.isPinned ? "Unpin" : "Pin"}
+            title={item.isPinned ? "Unpin post" : "Pin post to top"}
           >
             <Pin size={11} fill={item.isPinned ? "currentColor" : "none"} strokeWidth={2} />
           </button>
@@ -197,46 +224,62 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             </span>
           )}
           {item.isPinned && (
-            <span className="w-6 h-6 rounded-full bg-white/95 dark:bg-black/90 backdrop-blur-md flex items-center justify-center text-[#007AFF] shadow-xs">
-              <Pin size={11} fill="currentColor" />
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#007AFF] text-white flex items-center gap-1 shadow-xs">
+              <Pin size={10} fill="currentColor" />
+              <span>Pinned</span>
             </span>
           )}
         </div>
 
-        {/* Top-Right: Floating Translucent Circular Actions (Eye, External Link, Trash) */}
+        {/* Top-Right: Floating Translucent Circular Actions (Pin, Edit, External Link, Trash) */}
         <div 
           onClick={(e) => e.stopPropagation()}
           className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
         >
-          {/* Quick Preview Eye */}
+          {/* 1. Pin / Unpin Button */}
           <button
             type="button"
-            onClick={handleClick}
-            className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-black dark:hover:text-white hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-            title="Preview Details"
+            onClick={handleTogglePin}
+            className={clsx(
+              "w-7 h-7 rounded-full backdrop-blur-md shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all",
+              item.isPinned
+                ? "bg-[#007AFF] text-white hover:bg-[#0069D9]"
+                : "bg-white/95 dark:bg-black/80 text-black/75 dark:text-white/80 hover:text-[#007AFF] dark:hover:text-[#0A84FF] hover:bg-white dark:hover:bg-black"
+            )}
+            title={item.isPinned ? "Unpin post" : "Pin post to top"}
           >
-            <Eye size={13} strokeWidth={2} />
+            <Pin size={12} fill={item.isPinned ? "currentColor" : "none"} strokeWidth={2} />
           </button>
 
-          {/* Open External Link */}
+          {/* 2. Edit Post Button */}
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-black dark:hover:text-white hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
+            title="Edit post details"
+          >
+            <Pencil size={12} strokeWidth={2} />
+          </button>
+
+          {/* 3. Open External Link */}
           {item.url && (
             <button
               type="button"
               onClick={handleOpenExternal}
               className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-[#007AFF] dark:hover:text-[#0A84FF] hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-              title="Open Source Link"
+              title="Open source link"
             >
               <ExternalLink size={12.5} strokeWidth={2} />
             </button>
           )}
 
-          {/* Delete Action */}
+          {/* 4. Delete Action */}
           {item.isArchived ? (
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); restoreItem(item.id); }}
               className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-[#34C759] hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-              title="Restore Item"
+              title="Restore post"
             >
               <RotateCcw size={12.5} strokeWidth={2} />
             </button>
@@ -245,7 +288,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
               type="button"
               onClick={handleDelete}
               className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-[#FF3B30] hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-              title="Delete Item"
+              title="Delete post"
             >
               <Trash2 size={12.5} strokeWidth={2} />
             </button>
