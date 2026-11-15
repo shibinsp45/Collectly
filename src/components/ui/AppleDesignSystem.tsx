@@ -251,8 +251,11 @@ export const SwiftSheet: React.FC<SwiftSheetProps> = ({
               {subtitle && <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">{subtitle}</p>}
             </div>
             <button
+              type="button"
               onClick={onClose}
-              className="h-7 w-7 rounded-full bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/[0.08] dark:hover:bg-white/[0.16] flex items-center justify-center text-[var(--text-secondary)] transition-colors cursor-pointer"
+              className="min-w-[44px] min-h-[44px] w-9 h-9 rounded-full bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/[0.08] dark:hover:bg-white/[0.16] flex items-center justify-center text-[var(--text-secondary)] transition-colors cursor-pointer"
+              title="Close dialog"
+              aria-label="Close dialog"
             >
               ✕
             </button>

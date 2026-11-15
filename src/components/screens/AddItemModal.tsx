@@ -26,6 +26,7 @@ export const AddItemModal: React.FC = () => {
   
   // Mandatory Category state
   const [categoryName, setCategoryName] = useState('');
+  const [categoryError, setCategoryError] = useState(false);
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInstagramDetected, setIsInstagramDetected] = useState(false);
@@ -91,6 +92,7 @@ export const AddItemModal: React.FC = () => {
     setTitle('');
     setNoteContent('');
     setCategoryName('');
+    setCategoryError(false);
     setSelectedCollectionId('');
     setIsInstagramDetected(false);
     setThumbOffset(0);
@@ -108,7 +110,7 @@ export const AddItemModal: React.FC = () => {
     // Validation: Category is required before saving!
     const finalCategory = categoryName.trim();
     if (!finalCategory) {
-      alert('Please enter or select a category name before saving.');
+      setCategoryError(true);
       return;
     }
 
@@ -362,7 +364,10 @@ export const AddItemModal: React.FC = () => {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => setCategoryName(c.name)}
+                  onClick={() => {
+                    setCategoryName(c.name);
+                    setCategoryError(false);
+                  }}
                   className={clsx(
                     "px-2.5 py-1 rounded-[6px] text-[11.5px] font-medium transition-all cursor-pointer flex items-center gap-1 select-none",
                     isSelected
@@ -378,14 +383,31 @@ export const AddItemModal: React.FC = () => {
           </div>
 
           {/* Category Input: User can type any custom category name */}
-          <input
-            type="text"
-            required
-            placeholder="Type category name (e.g. Design, Architecture, Reels, Recipes)..."
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-            className="w-full h-9 px-3 text-[13px] rounded-[8px] bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.1] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
-          />
+          <div className="space-y-1">
+            <input
+              type="text"
+              required
+              placeholder="Type category name (e.g. Design, Architecture, Reels, Recipes)..."
+              value={categoryName}
+              onChange={(e) => {
+                setCategoryName(e.target.value);
+                if (categoryError && e.target.value.trim()) {
+                  setCategoryError(false);
+                }
+              }}
+              className={clsx(
+                "w-full h-9 px-3 text-[13px] rounded-[8px] bg-black/[0.04] dark:bg-white/[0.06] border text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 transition-colors",
+                categoryError
+                  ? "border-[#FD1D1D] focus:ring-[#FD1D1D]/40 bg-[#FD1D1D]/[0.03]"
+                  : "border-black/[0.08] dark:border-white/[0.1] focus:ring-[#007AFF]"
+              )}
+            />
+            {categoryError && (
+              <p className="text-[11.5px] font-medium text-[#FD1D1D] flex items-center gap-1 animate-in fade-in duration-150">
+                <span>⚠️ Category is required before saving this item.</span>
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Optional Collection Assignment */}

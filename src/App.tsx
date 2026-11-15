@@ -82,11 +82,9 @@ const MainAppContent: React.FC = () => {
       case 'dashboard':
         return <DashboardScreen />;
       case 'all-saves':
+      case 'recently-saved':
         return <AllSavesScreen />;
       case 'reels':
-        return <ReelsScreen />;
-      case 'recently-saved':
-        return <RecentlySavedScreen />;
       case 'collections':
         return <CollectionsScreen />;
       case 'collection-detail':

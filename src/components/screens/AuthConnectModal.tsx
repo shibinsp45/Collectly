@@ -63,8 +63,8 @@ export const AuthConnectModal: React.FC = () => {
           </span>
         </div>
 
-        {/* Biometric Fingerprint Login Card */}
-        <div className="p-3.5 rounded-[12px] bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] space-y-3">
+        {/* Mobile-Only Biometric Fingerprint Login Card (Hidden on Desktop & Tablet) */}
+        <div className="md:hidden p-3.5 rounded-[12px] bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-[8px] bg-gradient-to-tr from-[#007AFF] to-[#5856D6] text-white flex items-center justify-center shrink-0 shadow-2xs">
