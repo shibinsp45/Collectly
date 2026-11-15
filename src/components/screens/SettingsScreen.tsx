@@ -65,14 +65,13 @@ export const SettingsScreen: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto pb-28 pt-1">
-      {/* 1. Header with Clapperboard / Reels & Gear (matching screenshot media_1794688728358_f3a4db21.jpg) */}
+      {/* 1. Header with Clapperboard / Reels & Title */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-[12px] insta-gradient-bg text-white flex items-center justify-center shadow-md">
-          <InstaReelsIcon size={22} strokeWidth={2.2} />
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[12px] insta-gradient-bg text-white flex items-center justify-center shadow-md">
+          <InstaReelsIcon size={20} strokeWidth={2.2} />
         </div>
         <div className="flex items-center gap-2">
-          <InstaGearIcon size={22} className="text-[#E1306C] dark:text-[#FD1D1D]" strokeWidth={2.4} />
-          <h1 className="text-[26px] font-bold text-[var(--text-primary)] tracking-tight">
+          <h1 className="text-[22px] sm:text-[26px] font-bold text-[var(--text-primary)] tracking-tight">
             Settings
           </h1>
         </div>

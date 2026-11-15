@@ -288,43 +288,43 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         </div>
       </div>
 
-      {/* 2. Card Content Area (Matching reference UI text hierarchy) */}
-      <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1">
+      {/* 2. Card Content Area (Mobile 2x2 Bento & Desktop Responsive) */}
+      <div className="p-2.5 sm:p-4 flex flex-col justify-between flex-1">
         <div>
           {/* Line 1: Domain on Left • Date on Right */}
-          <div className="flex items-center justify-between text-[11.5px] text-[var(--text-muted)] font-normal mb-1.5">
-            <div className="flex items-center gap-1.5 min-w-0">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11.5px] text-[var(--text-muted)] font-normal mb-1">
+            <div className="flex items-center gap-1 min-w-0">
               {item.favicon && (
                 <img 
                   src={item.favicon} 
                   alt="" 
-                  className="w-3.5 h-3.5 rounded-[2px] object-contain shrink-0"
+                  className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-[2px] object-contain shrink-0"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }} 
                 />
               )}
-              <span className="truncate max-w-[150px] sm:max-w-[170px] hover:text-[var(--text-secondary)] transition-colors">
+              <span className="truncate max-w-[85px] sm:max-w-[170px] hover:text-[var(--text-secondary)] transition-colors">
                 {item.sourceDomain}
               </span>
             </div>
-            <span className="shrink-0 text-[11px] text-[var(--text-muted)] font-normal">
+            <span className="shrink-0 text-[9.5px] sm:text-[11px] text-[var(--text-muted)] font-normal">
               {formattedDate}
             </span>
           </div>
 
-          {/* Line 2: Bold 1-Line Title */}
-          <h3 className="text-[13.5px] sm:text-[14px] font-semibold text-[var(--text-primary)] leading-tight line-clamp-1 group-hover:text-[#007AFF] dark:group-hover:text-[#0A84FF] transition-colors">
+          {/* Line 2: Bold Title */}
+          <h3 className="text-[12px] sm:text-[14px] font-semibold text-[var(--text-primary)] leading-snug line-clamp-2 sm:line-clamp-1 group-hover:text-[#007AFF] dark:group-hover:text-[#0A84FF] transition-colors">
             {item.title}
           </h3>
 
-          {/* Line 3: 1-Line Description Snippet */}
-          <p className="text-[12px] text-[var(--text-secondary)] line-clamp-1 leading-normal mt-1 font-normal">
+          {/* Line 3: Description Snippet (hidden on small screen to keep bento clean) */}
+          <p className="hidden sm:block text-[12px] text-[var(--text-secondary)] line-clamp-1 leading-normal mt-1 font-normal">
             {item.description}
           </p>
         </div>
 
         {/* Line 4: Outlined Tag Icon + Category & Tags */}
-        <div className="mt-3 pt-1 flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] truncate">
-          <Tag size={12} className="shrink-0 opacity-70" strokeWidth={1.8} />
+        <div className="mt-2 sm:mt-3 pt-0.5 flex items-center gap-1 text-[9.5px] sm:text-[11px] text-[var(--text-muted)] truncate">
+          <Tag size={10} className="shrink-0 opacity-70" strokeWidth={1.8} />
           <span className="truncate hover:text-[var(--text-secondary)] transition-colors">
             {tagsDisplay}
           </span>

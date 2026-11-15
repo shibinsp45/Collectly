@@ -27,11 +27,11 @@ async function run() {
   await page.goto('http://localhost:5173/', { waitUntil: 'networkidle0', timeout: 30000 });
   await new Promise(r => setTimeout(r, 1200));
 
-  // 1. Home Dashboard
+  // 1. Home Dashboard (2x2 bento layout, clean top header without hamburger/settings, no search suggestions)
   console.log('1_home_dashboard.png');
   await page.screenshot({ path: path.join(outDir, '1_home_dashboard.png') });
 
-  // 2. Saved Files
+  // 2. Saves & Instagram (Unified hub with 3 separated sections)
   console.log('2_saved_files.png');
   await page.evaluate(() => {
     const btns = Array.from(document.querySelectorAll('nav button'));
@@ -40,11 +40,12 @@ async function run() {
   await new Promise(r => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, '2_saved_files.png') });
 
-  // 3. Reels Screen
+  // 3. Reels Screen (Dedicated fullscreen reels feed)
   console.log('3_reels_screen.png');
   await page.evaluate(() => {
-    const btns = Array.from(document.querySelectorAll('nav button'));
-    btns[2]?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    const btns = Array.from(document.querySelectorAll('button'));
+    const reelsBtn = btns.find(b => b.textContent?.includes('Watch Fullscreen Reels') || b.textContent?.includes('Reels'));
+    reelsBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
   await new Promise(r => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, '3_reels_screen.png') });
@@ -53,7 +54,7 @@ async function run() {
   console.log('4_collections_screen.png');
   await page.evaluate(() => {
     const btns = Array.from(document.querySelectorAll('nav button'));
-    btns[4]?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    btns[3]?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
   await new Promise(r => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, '4_collections_screen.png') });
@@ -62,7 +63,7 @@ async function run() {
   console.log('5_settings_account.png');
   await page.evaluate(() => {
     const btns = Array.from(document.querySelectorAll('nav button'));
-    btns[5]?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    btns[4]?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
   await new Promise(r => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, '5_settings_account.png') });

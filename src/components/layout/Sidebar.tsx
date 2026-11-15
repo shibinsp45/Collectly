@@ -115,21 +115,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Mobile Drawer Backdrop (mobile < md only) */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden animate-in fade-in duration-200"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
-
-      {/* Sidebar: Frosted glass dock / rail on tablet & desktop, full expanded drawer on mobile */}
+      {/* Sidebar: Desktop and Tablet only (Completely removed on mobile UI) */}
       <aside
         className={clsx(
-          "fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-200 select-none shadow-2xl md:shadow-none",
+          "hidden md:flex fixed top-0 bottom-0 left-0 z-50 flex-col transition-all duration-200 select-none shadow-none",
           "bg-white/70 dark:bg-[#120B1C]/75 backdrop-blur-2xl border-r border-black/[0.06] dark:border-white/[0.08] text-[var(--text-secondary)]",
-          isRail ? "md:w-[68px]" : "md:w-[230px]",
-          isMobileOpen ? "translate-x-0 w-[260px] max-w-[85vw]" : "-translate-x-full md:translate-x-0"
+          isRail ? "w-[68px]" : "w-[230px]"
         )}
       >
         {/* Top Header */}
