@@ -1,5 +1,12 @@
 import React from 'react';
-import { House, Library, Plus, Folder, Search } from 'lucide-react';
+import { 
+  InstaHomeIcon, 
+  InstaReelsIcon, 
+  InstaBookmarkIcon, 
+  InstaSearchIcon, 
+  InstaGearIcon,
+  InstaPlusIcon 
+} from '../ui/InstagramDesignIcons';
 import { useCollectly } from '../../context/CollectlyContext';
 import { ScreenId } from '../../types';
 import { clsx } from 'clsx';
@@ -20,64 +27,95 @@ export const MobileNav: React.FC = () => {
     setSelectedCategoryId(null);
   };
 
-  const navItems = [
-    { id: 'dashboard' as ScreenId, label: 'Home', icon: House },
-    { id: 'all-saves' as ScreenId, label: 'Saves', icon: Library },
-    { id: 'add' as const, label: 'Add', icon: Plus, isAction: true },
-    { id: 'collections' as ScreenId, label: 'Collections', icon: Folder },
-    { id: 'search' as const, label: 'Search', icon: Search, isAction: true },
-  ];
-
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-[64px] pb-[env(safe-area-inset-bottom,6px)] bg-[#F5F5F7]/95 dark:bg-[#161618]/95 backdrop-blur-2xl border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around px-2 select-none shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
-      {navItems.map((item) => {
-        const isAction = 'isAction' in item && item.isAction;
-        const isActive = !isAction && activeScreen === item.id;
-        const Icon = item.icon;
+    <nav className="md:hidden fixed bottom-4 left-3 right-3 max-w-[390px] mx-auto z-40 h-[62px] px-2.5 rounded-full glass-dock flex items-center justify-between select-none shadow-[0_16px_40px_rgba(0,0,0,0.55)] transition-all">
+      {/* 1. Home */}
+      <button
+        type="button"
+        onClick={() => handleNav('dashboard')}
+        className={clsx(
+          "w-11 h-11 flex items-center justify-center rounded-full transition-all active:scale-90 cursor-pointer",
+          activeScreen === 'dashboard'
+            ? "bg-white/20 dark:bg-white/15 text-white shadow-inner scale-105"
+            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        )}
+        aria-label="Home"
+        title="Home"
+      >
+        <InstaHomeIcon size={21} filled={activeScreen === 'dashboard'} strokeWidth={2} />
+      </button>
 
-        if (item.id === 'add') {
-          return (
-            <button
-              key={item.label}
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex flex-col items-center justify-center -mt-4 w-12 h-12 rounded-full bg-[#007AFF] text-white shadow-md active:scale-90 transition-transform cursor-pointer"
-              aria-label="Add content"
-            >
-              <Plus size={22} strokeWidth={2.5} />
-            </button>
-          );
-        }
+      {/* 2. Saves & Media / Reels */}
+      <button
+        type="button"
+        onClick={() => handleNav('all-saves')}
+        className={clsx(
+          "w-11 h-11 flex items-center justify-center rounded-full transition-all active:scale-90 cursor-pointer",
+          activeScreen === 'all-saves' || activeScreen === 'recently-saved'
+            ? "bg-white/20 dark:bg-white/15 text-white shadow-inner scale-105"
+            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        )}
+        aria-label="Saves & Reels"
+        title="Saves & Reels"
+      >
+        <InstaReelsIcon size={21} filled={activeScreen === 'all-saves'} strokeWidth={2} />
+      </button>
 
-        if (item.id === 'search') {
-          return (
-            <button
-              key={item.label}
-              onClick={() => setIsSearchModalOpen(true)}
-              className="flex flex-col items-center justify-center w-14 h-12 text-[var(--text-secondary)] active:scale-90 transition-transform cursor-pointer"
-              aria-label="Search"
-            >
-              <Search size={19} strokeWidth={2} />
-              <span className="text-[10px] font-medium mt-0.5">Search</span>
-            </button>
-          );
-        }
+      {/* 3. New Save / Plus Action (Instagram Gradient Button in Center) */}
+      <button
+        type="button"
+        onClick={() => setIsAddModalOpen(true)}
+        className="w-11 h-11 flex items-center justify-center rounded-full insta-gradient-bg text-white shadow-[0_4px_16px_rgba(225,48,108,0.4)] active:scale-90 transition-all cursor-pointer"
+        aria-label="Save New Item"
+        title="Save New Item"
+      >
+        <InstaPlusIcon size={20} strokeWidth={2.4} />
+      </button>
 
-        return (
-          <button
-            key={item.label}
-            onClick={() => handleNav(item.id as ScreenId)}
-            className={clsx(
-              "flex flex-col items-center justify-center w-14 h-12 transition-all active:scale-90 cursor-pointer",
-              isActive ? "text-[#007AFF] dark:text-[#0A84FF]" : "text-[var(--text-secondary)]"
-            )}
-          >
-            <Icon size={19} strokeWidth={isActive ? 2.4 : 1.8} />
-            <span className={clsx("text-[10px] mt-0.5", isActive ? "font-semibold" : "font-medium")}>
-              {item.label}
-            </span>
-          </button>
-        );
-      })}
+      {/* 4. Collections / Saved Ribbon */}
+      <button
+        type="button"
+        onClick={() => handleNav('collections')}
+        className={clsx(
+          "w-11 h-11 flex items-center justify-center rounded-full transition-all active:scale-90 cursor-pointer",
+          activeScreen === 'collections' || activeScreen === 'collection-detail'
+            ? "bg-white/20 dark:bg-white/15 text-white shadow-inner scale-105"
+            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        )}
+        aria-label="Collections"
+        title="Collections"
+      >
+        <InstaBookmarkIcon size={20} filled={activeScreen === 'collections'} strokeWidth={2} />
+      </button>
+
+      {/* 5. Search (Quick Spotlight Search) */}
+      <button
+        type="button"
+        onClick={() => setIsSearchModalOpen(true)}
+        className="w-11 h-11 flex items-center justify-center rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] active:scale-90 transition-all cursor-pointer"
+        aria-label="Search"
+        title="Search"
+      >
+        <InstaSearchIcon size={20} strokeWidth={2} />
+      </button>
+
+      {/* 6. Settings (Gear with frosted active pill, matching reference screenshot) */}
+      <button
+        type="button"
+        onClick={() => handleNav('settings')}
+        className={clsx(
+          "w-11 h-11 flex items-center justify-center rounded-full transition-all active:scale-90 cursor-pointer",
+          activeScreen === 'settings'
+            ? "bg-white/20 dark:bg-white/15 text-white shadow-inner scale-105"
+            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        )}
+        aria-label="Settings"
+        title="Settings"
+      >
+        <InstaGearIcon size={20} filled={activeScreen === 'settings'} strokeWidth={2} />
+      </button>
     </nav>
   );
 };
+
+export default MobileNav;

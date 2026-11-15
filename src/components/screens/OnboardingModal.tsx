@@ -13,7 +13,8 @@ import {
   Utensils, 
   Music,
   User,
-  Heart
+  Heart,
+  Fingerprint
 } from 'lucide-react';
 import { useCollectly } from '../../context/CollectlyContext';
 import { InstagramIcon } from '../ui/InstagramIcon';
@@ -38,6 +39,8 @@ export const OnboardingModal: React.FC = () => {
     updateUserProfile,
     loginWithInstagram,
     loginWithGoogle,
+    isBiometricsEnabled,
+    enableBiometrics,
     showToast
   } = useCollectly();
 
@@ -53,11 +56,12 @@ export const OnboardingModal: React.FC = () => {
     'design', 'tech', 'visuals', 'articles'
   ]);
 
-  // Step 3: Social & Cloud Connect
+  // Step 3: Social, Cloud & Fingerprint Connect
   const [instaHandle, setInstaHandle] = useState(user.instagramHandle || '@ansu.design');
   const [isInstaLinked, setIsInstaLinked] = useState(user.instagramConnected ?? true);
   const [googleEmail, setGoogleEmail] = useState(user.googleEmail || 'ansu@gmail.com');
   const [isGoogleLinked, setIsGoogleLinked] = useState(user.googleConnected ?? true);
+  const [isBioLinked, setIsBioLinked] = useState(true);
 
   if (!isOnboardingOpen) return null;
 

@@ -11,6 +11,11 @@ import {
 import { SavedItem, ViewMode } from '../../types';
 import { useCollectly } from '../../context/CollectlyContext';
 import { InstagramIcon } from '../ui/InstagramIcon';
+import { 
+  InstaBookmarkIcon, 
+  InstaReelsIcon, 
+  InstaShareIcon 
+} from '../ui/InstagramDesignIcons';
 import { clsx } from 'clsx';
 
 interface ItemCardProps {
@@ -91,19 +96,19 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       <div
         onClick={handleClick}
         className={clsx(
-          "group relative flex items-center justify-between gap-3 p-2.5 sm:p-3 rounded-[14px] cursor-pointer transition-all duration-150 select-none",
-          "bg-white dark:bg-[#1E1E22] hover:bg-[#FBFBFC] dark:hover:bg-[#25252A]",
-          "border border-black/[0.07] dark:border-white/[0.08] hover:border-black/[0.18] dark:hover:border-white/[0.2]",
-          "shadow-2xs hover:shadow-[0_4px_16px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.3)]",
-          item.isPinned && "bg-[#007AFF]/[0.06] dark:bg-[#0A84FF]/[0.12] border-[#007AFF]/40 ring-1 ring-[#007AFF]/30"
+          "group relative flex items-center justify-between gap-3 p-2.5 sm:p-3 rounded-[16px] cursor-pointer transition-all duration-200 select-none",
+          "glass-card hover:bg-white/80 dark:hover:bg-[#201530]/80",
+          "hover:border-[#E1306C]/40 dark:hover:border-[#E1306C]/50",
+          "hover:shadow-[0_8px_24px_rgba(225,48,108,0.15)]",
+          item.isPinned && "ring-1 ring-[#E1306C]/60 bg-[#E1306C]/[0.06] dark:bg-[#E1306C]/[0.12]"
         )}
       >
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
           {/* App / Source Squircle Icon on Left */}
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[10px] bg-black/[0.03] dark:bg-white/[0.06] border border-black/[0.05] dark:border-white/[0.06] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+          <div className="w-10 h-10 rounded-[12px] bg-black/[0.03] dark:bg-white/[0.06] border border-black/[0.05] dark:border-white/[0.08] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
             {isInstagram ? (
-              <div className="w-full h-full bg-gradient-to-tr from-[#FD1D1D] via-[#E1306C] to-[#833AB4] flex items-center justify-center text-white">
-                <InstagramIcon size={18} strokeWidth={2.2} />
+              <div className="w-full h-full insta-gradient-bg flex items-center justify-center text-white">
+                <InstagramIcon size={19} strokeWidth={2.2} />
               </div>
             ) : item.favicon ? (
               <img 
@@ -121,7 +126,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
           {/* Title & URL Stack */}
           <div className="min-w-0 flex-1 space-y-0.5">
-            <h4 className="text-[13px] sm:text-[13.5px] font-semibold text-[var(--text-primary)] truncate leading-tight group-hover:text-[#007AFF] dark:group-hover:text-[#0A84FF] transition-colors">
+            <h4 className="text-[13px] sm:text-[13.5px] font-semibold text-[var(--text-primary)] truncate leading-tight group-hover:text-[#E1306C] dark:group-hover:text-[#FD1D1D] transition-colors">
               {item.title}
             </h4>
             <p className="text-[11px] text-[var(--text-muted)] truncate leading-tight font-normal">
@@ -133,16 +138,16 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {/* Action buttons on right (Edit, External Link, Pin/Unpin) */}
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
         >
           {/* Edit Post Button */}
           <button
             type="button"
             onClick={handleEdit}
-            className="w-6.5 h-6.5 rounded-full bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/80 hover:text-white dark:hover:bg-white dark:hover:text-black flex items-center justify-center text-[var(--text-secondary)] transition-all cursor-pointer shadow-2xs"
+            className="w-7 h-7 rounded-full bg-black/[0.06] dark:bg-white/[0.1] hover:bg-[#E1306C] hover:text-white flex items-center justify-center text-[var(--text-secondary)] transition-all cursor-pointer shadow-2xs"
             title="Edit post"
           >
-            <Pencil size={11} strokeWidth={2} />
+            <Pencil size={12} strokeWidth={2} />
           </button>
 
           {/* Open Link */}
@@ -150,10 +155,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             <button
               type="button"
               onClick={handleOpenExternal}
-              className="w-6.5 h-6.5 rounded-full bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/80 hover:text-white dark:hover:bg-white dark:hover:text-black flex items-center justify-center text-[var(--text-secondary)] transition-all cursor-pointer shadow-2xs"
+              className="w-7 h-7 rounded-full bg-black/[0.06] dark:bg-white/[0.1] hover:bg-[#E1306C] hover:text-white flex items-center justify-center text-[var(--text-secondary)] transition-all cursor-pointer shadow-2xs"
               title="Open link"
             >
-              <ExternalLink size={12} strokeWidth={2} />
+              <InstaShareIcon size={13} strokeWidth={2} />
             </button>
           )}
 
@@ -162,14 +167,14 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             type="button"
             onClick={handleTogglePin}
             className={clsx(
-              "w-6.5 h-6.5 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-2xs",
+              "w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-2xs",
               item.isPinned 
-                ? "bg-[#007AFF] text-white" 
-                : "bg-black/[0.05] dark:bg-white/[0.1] text-[var(--text-secondary)] hover:bg-[#007AFF] hover:text-white"
+                ? "insta-gradient-bg text-white" 
+                : "bg-black/[0.06] dark:bg-white/[0.1] text-[var(--text-secondary)] hover:bg-[#E1306C] hover:text-white"
             )}
             title={item.isPinned ? "Unpin post" : "Pin post to top"}
           >
-            <Pin size={11} fill={item.isPinned ? "currentColor" : "none"} strokeWidth={2} />
+            <InstaBookmarkIcon size={12} filled={item.isPinned} strokeWidth={2} />
           </button>
         </div>
       </div>
@@ -177,18 +182,17 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   }
 
   // ==========================================
-  // REFERENCE UI GRID CARD (Pixel Perfect)
+  // REFERENCE UI GRID CARD (Pixel Perfect Glass)
   // ==========================================
   return (
     <div
       onClick={handleClick}
       className={clsx(
-        "group relative flex flex-col rounded-[16px] overflow-hidden cursor-pointer select-none transition-all duration-200",
-        "bg-white dark:bg-[#1A1A1E]",
-        "border border-black/[0.08] dark:border-white/[0.08]",
-        "hover:border-black/[0.18] dark:hover:border-white/[0.2]",
-        "shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_28px_rgba(0,0,0,0.4)]",
-        item.isPinned && "ring-1 ring-[#007AFF]/60 shadow-[0_2px_12px_rgba(0,122,255,0.12)]"
+        "group relative flex flex-col rounded-[22px] overflow-hidden cursor-pointer select-none transition-all duration-300",
+        "glass-card hover:bg-white/85 dark:hover:bg-[#1C142A]/85",
+        "hover:border-[#E1306C]/40 dark:hover:border-[#E1306C]/50",
+        "shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(225,48,108,0.18)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:scale-[1.015]",
+        item.isPinned && "ring-1 ring-[#E1306C]/70 shadow-[0_4px_20px_rgba(225,48,108,0.22)]"
       )}
     >
       {/* 1. Top Cover / Thumbnail Media (Aspect 16:10 like reference UI) */}
@@ -197,16 +201,15 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           <img 
             src={item.previewImage} 
             alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             loading="lazy"
             onError={(e) => {
-              // Graceful fallback to styled monogram banner if image fails
               e.currentTarget.style.display = 'none';
             }}
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-black/[0.02] to-black/[0.05] dark:from-white/[0.02] dark:to-white/[0.05] p-4 text-center">
-            <div className="w-10 h-10 rounded-[10px] bg-black/[0.05] dark:bg-white/[0.08] flex items-center justify-center font-bold text-[14px] text-[var(--text-muted)] mb-1">
+            <div className="w-10 h-10 rounded-[12px] bg-black/[0.05] dark:bg-white/[0.08] flex items-center justify-center font-bold text-[14px] text-[var(--text-muted)] mb-1">
               {item.sourceDomain.slice(0, 2).toUpperCase()}
             </div>
             <span className="text-[11px] text-[var(--text-muted)] font-medium truncate max-w-[180px]">
@@ -218,14 +221,14 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {/* Top-Left: Type Badge or Pinned Indicator */}
         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10 pointer-events-none">
           {isInstagram && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-black/60 dark:bg-black/80 backdrop-blur-md text-white flex items-center gap-1 shadow-2xs">
-              <InstagramIcon size={10} />
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold insta-gradient-bg text-white flex items-center gap-1 shadow-sm">
+              <InstagramIcon size={11} strokeWidth={2.2} />
               <span>Instagram</span>
             </span>
           )}
           {item.isPinned && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#007AFF] text-white flex items-center gap-1 shadow-xs">
-              <Pin size={10} fill="currentColor" />
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#E1306C] text-white flex items-center gap-1 shadow-xs">
+              <InstaBookmarkIcon size={10} filled />
               <span>Pinned</span>
             </span>
           )}
@@ -234,65 +237,54 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {/* Top-Right: Floating Translucent Circular Actions (Pin, Edit, External Link, Trash) */}
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+          className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         >
           {/* 1. Pin / Unpin Button */}
           <button
             type="button"
             onClick={handleTogglePin}
             className={clsx(
-              "w-7 h-7 rounded-full backdrop-blur-md shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all",
+              "w-7.5 h-7.5 rounded-full backdrop-blur-xl shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/10",
               item.isPinned
-                ? "bg-[#007AFF] text-white hover:bg-[#0069D9]"
-                : "bg-white/95 dark:bg-black/80 text-black/75 dark:text-white/80 hover:text-[#007AFF] dark:hover:text-[#0A84FF] hover:bg-white dark:hover:bg-black"
+                ? "insta-gradient-bg text-white"
+                : "bg-black/65 dark:bg-black/80 text-white/90 hover:text-white hover:bg-[#E1306C]"
             )}
             title={item.isPinned ? "Unpin post" : "Pin post to top"}
           >
-            <Pin size={12} fill={item.isPinned ? "currentColor" : "none"} strokeWidth={2} />
+            <InstaBookmarkIcon size={13} filled={item.isPinned} strokeWidth={2} />
           </button>
 
-          {/* 2. Edit Post Button */}
+          {/* 2. Direct Edit Details Button */}
           <button
             type="button"
             onClick={handleEdit}
-            className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-black dark:hover:text-white hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-            title="Edit post details"
+            className="w-7.5 h-7.5 rounded-full bg-black/65 dark:bg-black/80 hover:bg-[#E1306C] text-white/90 hover:text-white backdrop-blur-xl shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/10"
+            title="Edit details"
           >
             <Pencil size={12} strokeWidth={2} />
           </button>
 
-          {/* 3. Open External Link */}
+          {/* 3. External Link Button */}
           {item.url && (
             <button
               type="button"
               onClick={handleOpenExternal}
-              className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-[#007AFF] dark:hover:text-[#0A84FF] hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-              title="Open source link"
+              className="w-7.5 h-7.5 rounded-full bg-black/65 dark:bg-black/80 hover:bg-[#E1306C] text-white/90 hover:text-white backdrop-blur-xl shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/10"
+              title="Open original link"
             >
-              <ExternalLink size={12.5} strokeWidth={2} />
+              <InstaShareIcon size={12} strokeWidth={2} />
             </button>
           )}
 
-          {/* 4. Delete Action */}
-          {item.isArchived ? (
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); restoreItem(item.id); }}
-              className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-[#34C759] hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-              title="Restore post"
-            >
-              <RotateCcw size={12.5} strokeWidth={2} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="w-7 h-7 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-md text-black/75 dark:text-white/80 hover:text-[#FF3B30] hover:bg-white dark:hover:bg-black shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all"
-              title="Delete post"
-            >
-              <Trash2 size={12.5} strokeWidth={2} />
-            </button>
-          )}
+          {/* 4. Delete Item Button */}
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="w-7.5 h-7.5 rounded-full bg-black/65 dark:bg-black/80 hover:bg-[#FD1D1D] text-white/90 hover:text-white backdrop-blur-xl shadow-xs flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/10"
+            title="Delete post"
+          >
+            <Trash2 size={12} strokeWidth={2} />
+          </button>
         </div>
       </div>
 

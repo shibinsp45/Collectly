@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, LogOut, RefreshCw, Cloud, ShieldCheck } from 'lucide-react';
+import { Check, LogOut, RefreshCw, Cloud, ShieldCheck, Fingerprint } from 'lucide-react';
 import { useCollectly } from '../../context/CollectlyContext';
 import { SwiftSheet, SwiftButton } from '../ui/AppleDesignSystem';
 import { InstagramIcon } from '../ui/InstagramIcon';
@@ -17,7 +17,12 @@ export const AuthConnectModal: React.FC = () => {
     syncInstagramSaves,
     syncGoogleSaves,
     isSyncingInstagram,
-    isSyncingGoogle
+    isSyncingGoogle,
+    isBiometricsEnabled,
+    enableBiometrics,
+    disableBiometrics,
+    loginWithFingerprint,
+    setIsBiometricModalOpen
   } = useCollectly();
 
   const activeSavesCount = items.filter(i => !i.isArchived).length;
@@ -56,6 +61,62 @@ export const AuthConnectModal: React.FC = () => {
           <span className="px-2.5 py-1 rounded-[6px] text-[10.5px] font-semibold bg-[#007AFF]/10 text-[#007AFF] dark:text-[#0A84FF] shrink-0">
             Pro Plan
           </span>
+        </div>
+
+        {/* Biometric Fingerprint Login Card */}
+        <div className="p-3.5 rounded-[12px] bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-[8px] bg-gradient-to-tr from-[#007AFF] to-[#5856D6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <Fingerprint size={18} strokeWidth={2.2} />
+              </div>
+              <div>
+                <h4 className="text-[13.5px] font-semibold text-[var(--text-primary)]">Fingerprint Sign In</h4>
+                <p className="text-[11.5px] text-[var(--text-secondary)]">
+                  {isBiometricsEnabled ? 'Touch ID / Windows Hello active' : 'Biometric sensor not enrolled'}
+                </p>
+              </div>
+            </div>
+
+            {isBiometricsEnabled ? (
+              <span className="flex items-center gap-1 text-[11px] font-medium text-[#34C759] bg-[#34C759]/10 px-2 py-0.5 rounded-full shrink-0">
+                <Check size={11} strokeWidth={2.5} /> Enrolled
+              </span>
+            ) : (
+              <SwiftButton
+                size="sm"
+                variant="prominent"
+                onClick={enableBiometrics}
+              >
+                Enroll Sensor
+              </SwiftButton>
+            )}
+          </div>
+
+          <div className="pt-2 border-t border-black/[0.04] dark:border-white/[0.05] flex items-center justify-between gap-2">
+            <span className="text-[11.5px] text-[var(--text-muted)]">
+              Quickly unlock your saves using your fingerprint
+            </span>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <SwiftButton
+                size="sm"
+                variant="bordered"
+                onClick={() => setIsBiometricModalOpen(true)}
+              >
+                <Fingerprint size={12} className="text-[#007AFF]" />
+                <span>Test Sensor</span>
+              </SwiftButton>
+              {isBiometricsEnabled && (
+                <button
+                  onClick={disableBiometrics}
+                  className="p-1.5 rounded-[6px] text-[var(--text-muted)] hover:text-[#D92D20] cursor-pointer"
+                  title="Disable Biometric Fingerprint"
+                >
+                  <LogOut size={13} />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* 2. Cloud Sync Engine Status Card (Moved from top header) */}

@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  House, 
-  Library, 
-  Folder, 
-  MapPin, 
   Plus, 
-  Settings, 
   Menu,
   X,
   Sun,
@@ -13,6 +8,13 @@ import {
   Laptop,
   ChevronRight
 } from 'lucide-react';
+import { 
+  InstaHomeIcon, 
+  InstaBookmarkIcon, 
+  InstaReelsIcon, 
+  InstaGridIcon, 
+  InstaGearIcon 
+} from '../ui/InstagramDesignIcons';
 import { InstagramIcon } from '../ui/InstagramIcon';
 import { useCollectly } from '../../context/CollectlyContext';
 import { ScreenId } from '../../types';
@@ -64,11 +66,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isRail = isCollapsed && !isMobileOpen;
 
   const navItems = [
-    { id: 'dashboard' as ScreenId, label: 'Home', icon: House, onClick: () => handleNav('dashboard') },
-    { id: 'all-saves' as ScreenId, label: 'Saves', icon: Library, onClick: () => { setSelectedTypeFilter('all'); handleNav('all-saves'); } },
-    { id: 'collections' as ScreenId, label: 'Collections', icon: Folder, onClick: () => handleNav('collections') },
-    { id: 'all-saves' as ScreenId, label: 'Instagram', icon: InstagramIcon, onClick: () => { setSelectedTypeFilter('social'); handleNav('all-saves'); } },
-    { id: 'all-saves' as ScreenId, label: 'Google', icon: MapPin, onClick: () => { setSelectedTypeFilter('location'); handleNav('all-saves'); } },
+    { id: 'dashboard' as ScreenId, label: 'Home', icon: InstaHomeIcon, onClick: () => handleNav('dashboard') },
+    { id: 'all-saves' as ScreenId, label: 'Saves', icon: InstaBookmarkIcon, onClick: () => { setSelectedTypeFilter('all'); handleNav('all-saves'); } },
+    { id: 'all-saves' as ScreenId, label: 'Reels & Posts', icon: InstaReelsIcon, onClick: () => { setSelectedTypeFilter('social'); handleNav('all-saves'); } },
+    { id: 'collections' as ScreenId, label: 'Collections', icon: InstaGridIcon, onClick: () => handleNav('collections') },
+    { id: 'settings' as ScreenId, label: 'Settings', icon: InstaGearIcon, onClick: () => handleNav('settings') },
   ];
 
   return (
@@ -76,16 +78,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Drawer Backdrop (mobile < md only) */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden animate-in fade-in duration-200"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
-      {/* Sidebar: Slender dock / rail on tablet & desktop, full expanded drawer on mobile */}
+      {/* Sidebar: Frosted glass dock / rail on tablet & desktop, full expanded drawer on mobile */}
       <aside
         className={clsx(
           "fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-200 select-none shadow-2xl md:shadow-none",
-          "bg-[#F2F2F7] dark:bg-[#161618] border-r border-black/[0.08] dark:border-white/[0.07] text-[#6E6E73] dark:text-[#A1A1A6]",
+          "bg-white/70 dark:bg-[#120B1C]/75 backdrop-blur-2xl border-r border-black/[0.06] dark:border-white/[0.08] text-[var(--text-secondary)]",
           isRail ? "md:w-[68px]" : "md:w-[230px]",
           isMobileOpen ? "translate-x-0 w-[260px] max-w-[85vw]" : "-translate-x-full md:translate-x-0"
         )}
@@ -105,11 +107,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className="flex items-center gap-2.5 cursor-pointer group"
               title="Collectly Setup & Onboarding"
             >
-              <div className="w-6 h-6 rounded-[5px] bg-[#007AFF] text-white flex items-center justify-center font-bold text-[11px] shadow-2xs group-hover:scale-105 transition-transform">
+              <div className="w-6.5 h-6.5 rounded-[7px] insta-gradient-bg text-white flex items-center justify-center font-bold text-[12px] shadow-sm group-hover:scale-105 transition-transform">
                 C
               </div>
               <div className="flex flex-col">
-                <span className="text-[14px] font-bold text-[var(--text-primary)] tracking-tight leading-tight group-hover:text-[#007AFF] transition-colors">
+                <span className="text-[14px] font-bold insta-gradient-text tracking-tight leading-tight">
                   Collectly
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)] font-medium">Personal Knowledge</span>
@@ -156,7 +158,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Navigation Items */}
           <div className="space-y-1">
             {navItems.map((item, index) => {
-              const isActive = activeScreen === item.id && index === 0;
+              const isActive = activeScreen === item.id;
               const Icon = item.icon;
 
               if (isRail) {
@@ -166,16 +168,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={item.onClick}
                     title={item.label}
                     className={clsx(
-                      "w-full py-2.5 px-1 rounded-[8px] flex flex-col items-center justify-center gap-1 transition-all cursor-pointer group relative",
+                      "w-full py-2.5 px-1 rounded-[10px] flex flex-col items-center justify-center gap-1 transition-all cursor-pointer group relative",
                       isActive 
-                        ? "text-[var(--text-primary)] bg-black/[0.08] dark:bg-white/[0.12] font-semibold shadow-xs" 
+                        ? "text-[var(--text-primary)] bg-white/20 dark:bg-white/10 font-semibold shadow-inner scale-105" 
                         : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
                     )}
                   >
                     {isActive && (
-                      <span className="absolute left-0 top-2 bottom-2 w-[3px] bg-[#007AFF] dark:bg-white rounded-r" />
+                      <span className="absolute left-0 top-2 bottom-2 w-[3px] insta-gradient-bg rounded-r" />
                     )}
-                    <Icon size={19} strokeWidth={isActive ? 2.2 : 1.8} className={clsx("transition-transform group-hover:scale-105", isActive && "text-[#007AFF] dark:text-white")} />
+                    <Icon size={20} filled={isActive} strokeWidth={isActive ? 2.4 : 1.8} className={clsx("transition-transform group-hover:scale-105", isActive && "text-[#E1306C] dark:text-[#FD1D1D]")} />
                     <span className="text-[10px] tracking-tight leading-tight text-center truncate max-w-[56px]">
                       {item.label}
                     </span>
@@ -189,13 +191,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   key={`${item.label}-${index}`}
                   onClick={item.onClick}
                   className={clsx(
-                    "w-full h-9 px-3 rounded-[8px] flex items-center gap-3 text-[13px] font-medium transition-all cursor-pointer active:scale-98",
+                    "w-full h-9.5 px-3 rounded-[10px] flex items-center gap-3 text-[13px] font-medium transition-all cursor-pointer active:scale-98",
                     isActive 
-                      ? "bg-[#007AFF] text-white font-semibold shadow-xs" 
+                      ? "insta-gradient-bg text-white font-semibold shadow-[0_4px_16px_rgba(225,48,108,0.35)]" 
                       : "text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
                   )}
                 >
-                  <Icon size={17} strokeWidth={isActive ? 2.2 : 1.8} className={isActive ? "text-white" : "text-[var(--text-muted)]"} />
+                  <Icon size={18} filled={isActive} strokeWidth={isActive ? 2.4 : 1.8} className={isActive ? "text-white" : "text-[var(--text-muted)]"} />
                   <span className="flex-1 text-left truncate">{item.label}</span>
                 </button>
               );
@@ -207,10 +209,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               onClick={() => setIsAddModalOpen(true)}
               title="Save Item / Create"
-              className="w-full py-2.5 px-1 rounded-[8px] flex flex-col items-center justify-center gap-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all cursor-pointer group"
+              className="w-full py-2.5 px-1 rounded-[10px] flex flex-col items-center justify-center gap-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all cursor-pointer group"
             >
-              <div className="w-5 h-5 rounded-full border border-dashed border-[var(--text-muted)] group-hover:border-[var(--text-primary)] flex items-center justify-center">
-                <Plus size={13} />
+              <div className="w-6 h-6 rounded-full insta-gradient-bg text-white flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+                <Plus size={14} strokeWidth={2.5} />
               </div>
               <span className="text-[10px] tracking-tight leading-tight">Create</span>
             </button>
@@ -220,9 +222,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 setIsAddModalOpen(true);
                 setIsMobileOpen(false);
               }}
-              className="w-full h-9 px-3 rounded-[8px] flex items-center gap-2.5 text-[12.5px] font-semibold text-white bg-[#007AFF] hover:bg-[#0069D9] transition-all active:scale-98 shadow-xs cursor-pointer"
+              className="w-full h-9.5 px-3 rounded-[10px] flex items-center gap-2.5 text-[12.5px] font-semibold text-white insta-gradient-bg hover:opacity-95 transition-all active:scale-98 shadow-md cursor-pointer"
             >
-              <Plus size={15} strokeWidth={2.4} />
+              <Plus size={16} strokeWidth={2.5} />
               <span>Save New Item</span>
             </button>
           )}
@@ -355,7 +357,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 activeScreen === 'settings' && "text-[var(--text-primary)] bg-black/[0.08] dark:bg-white/[0.12]"
               )}
             >
-              <Settings size={18} />
+              <InstaGearIcon size={18} filled={activeScreen === 'settings'} />
               <span className="text-[10px]">Settings</span>
             </button>
           ) : (
@@ -366,7 +368,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 activeScreen === 'settings' && "bg-black/[0.08] dark:bg-white/[0.12] text-[var(--text-primary)] font-medium"
               )}
             >
-              <Settings size={16} />
+              <InstaGearIcon size={16} filled={activeScreen === 'settings'} />
               <span>Settings</span>
             </button>
           )}

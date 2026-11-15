@@ -14,6 +14,12 @@ import {
 import { INITIAL_ITEMS, INITIAL_COLLECTIONS, INITIAL_CATEGORIES } from '../lib/mockData';
 import { resolveThumbnailAutomatically } from '../lib/thumbnailService';
 import { SAMPLE_INSTAGRAM_SAVES, SAMPLE_GOOGLE_SAVES } from '../lib/syncService';
+import { 
+  registerBiometric, 
+  authenticateWithBiometric, 
+  disableBiometric, 
+  isBiometricRegistered 
+} from '../lib/biometricAuth';
 
 interface ToastMessage {
   id: string;
@@ -41,6 +47,14 @@ interface CollectlyContextType {
   isOnboardingOpen: boolean;
   setIsOnboardingOpen: (open: boolean) => void;
   updateUserProfile: (name: string, email?: string, avatar?: string) => void;
+
+  // Biometrics
+  isBiometricModalOpen: boolean;
+  setIsBiometricModalOpen: (open: boolean) => void;
+  isBiometricsEnabled: boolean;
+  enableBiometrics: () => Promise<boolean>;
+  disableBiometrics: () => void;
+  loginWithFingerprint: () => Promise<boolean>;
 
   // Syncing
   isSyncingInstagram: boolean;
@@ -172,12 +186,67 @@ export const CollectlyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isSyncingInstagram, setIsSyncingInstagram] = useState(false);
   const [isSyncingGoogle, setIsSyncingGoogle] = useState(false);
 
+  // Biometrics State
+  const [isBiometricModalOpen, setIsBiometricModalOpen] = useState(false);
+  const [isBiometricsEnabled, setIsBiometricsEnabled] = useState(() => isBiometricRegistered());
+
+  const enableBiometrics = async (): Promise<boolean> => {
+    try {
+      const res = await registerBiometric(user.name, user.email);
+      if (res.success) {
+        setIsBiometricsEnabled(true);
+        setUser(prev => ({ ...prev, biometricsEnabled: true, biometricsRegistered: true }));
+        showToast('Fingerprint Registered', 'You can now sign in using your fingerprint sensor.', 'success');
+        return true;
+      } else {
+        showToast('Fingerprint Registration', res.error || 'Could not register fingerprint.', 'warning');
+        return false;
+      }
+    } catch (e: any) {
+      showToast('Registration Error', e.message || 'Error configuring biometric sensor.', 'danger');
+      return false;
+    }
+  };
+
+  const disableBiometrics = () => {
+    disableBiometric();
+    setIsBiometricsEnabled(false);
+    setUser(prev => ({ ...prev, biometricsEnabled: false, biometricsRegistered: false }));
+    showToast('Fingerprint Removed', 'Biometric login disabled.', 'info');
+  };
+
+  const loginWithFingerprint = async (): Promise<boolean> => {
+    try {
+      const res = await authenticateWithBiometric();
+      if (res.success) {
+        if (res.user) {
+          updateUserProfile(res.user.name, res.user.email);
+        }
+        showToast('Fingerprint Verified', `Welcome back, ${res.user?.name || user.name}! Identity verified.`, 'success');
+        return true;
+      } else {
+        showToast('Biometric Error', 'Fingerprint was not recognized.', 'danger');
+        return false;
+      }
+    } catch (e: any) {
+      showToast('Biometric Error', e.message || 'Verification failed.', 'danger');
+      return false;
+    }
+  };
+
   const [items, setItems] = useState<SavedItem[]>(() => {
     try {
       const stored = localStorage.getItem('collectly_items_v3');
-      return stored ? JSON.parse(stored) : INITIAL_ITEMS;
+      const loaded: SavedItem[] = stored ? JSON.parse(stored) : INITIAL_ITEMS;
+      return loaded.map(item => ({
+        ...item,
+        previewImage: item.previewImage || resolveThumbnailAutomatically(item)
+      }));
     } catch {
-      return INITIAL_ITEMS;
+      return INITIAL_ITEMS.map(item => ({
+        ...item,
+        previewImage: item.previewImage || resolveThumbnailAutomatically(item)
+      }));
     }
   });
 
@@ -716,6 +785,12 @@ export const CollectlyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         isOnboardingOpen,
         setIsOnboardingOpen,
         updateUserProfile,
+        isBiometricModalOpen,
+        setIsBiometricModalOpen,
+        isBiometricsEnabled,
+        enableBiometrics,
+        disableBiometrics,
+        loginWithFingerprint,
         isSyncingInstagram,
         isSyncingGoogle,
         syncInstagramSaves,

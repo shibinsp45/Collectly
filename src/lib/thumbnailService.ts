@@ -9,7 +9,7 @@ interface ContentContext {
 }
 
 // Curated high-resolution Unsplash photo IDs categorized by topic
-const THEMATIC_THUMBNAILS: Record<string, string[]> = {
+export const THEMATIC_THUMBNAILS: Record<string, string[]> = {
   // Architecture & Interior Design
   architecture: [
     'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
@@ -144,4 +144,36 @@ export function resolveThumbnailAutomatically(context: ContentContext, offset = 
   const pool = THEMATIC_THUMBNAILS[poolKey] || THEMATIC_THUMBNAILS.technology;
   const index = Math.abs(offset) % pool.length;
   return pool[index];
+}
+
+/**
+ * Returns a list of 4-8 candidate thumbnails tailored for an item
+ */
+export function getCandidatesForContent(context: ContentContext): string[] {
+  const { url = '', title = '', description = '', category = '', type = '' } = context;
+  const combined = `${url} ${title} ${description} ${category} ${type}`.toLowerCase();
+
+  let poolKey = 'technology';
+  if (combined.includes('instagram') || combined.includes('reel') || type === 'social') {
+    poolKey = 'instagram';
+  } else if (combined.includes('cafe') || combined.includes('coffee') || combined.includes('food') || combined.includes('kochi')) {
+    poolKey = 'cafe';
+  } else if (combined.includes('travel') || combined.includes('hotel') || combined.includes('places') || combined.includes('kerala')) {
+    poolKey = 'travel';
+  } else if (combined.includes('figma') || combined.includes('design') || combined.includes('ui') || combined.includes('layout')) {
+    poolKey = 'design';
+  } else if (combined.includes('apple') || combined.includes('swift') || combined.includes('ios')) {
+    poolKey = 'apple';
+  } else if (combined.includes('arch') || combined.includes('space') || combined.includes('interior')) {
+    poolKey = 'architecture';
+  } else if (combined.includes('book') || combined.includes('reading') || combined.includes('learning')) {
+    poolKey = 'learning';
+  } else if (combined.includes('business') || combined.includes('saas') || combined.includes('market')) {
+    poolKey = 'business';
+  }
+
+  const primaryPool = THEMATIC_THUMBNAILS[poolKey] || THEMATIC_THUMBNAILS.technology;
+  // Combine primary pool with 2 from design or technology for variety
+  const secondaryPool = poolKey === 'design' ? THEMATIC_THUMBNAILS.apple : THEMATIC_THUMBNAILS.design;
+  return Array.from(new Set([...primaryPool, ...secondaryPool.slice(0, 2)]));
 }

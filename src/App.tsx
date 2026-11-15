@@ -21,6 +21,7 @@ import { AddItemModal } from './components/screens/AddItemModal';
 import { SearchOverlayModal } from './components/screens/SearchOverlayModal';
 import { AuthConnectModal } from './components/screens/AuthConnectModal';
 import { OnboardingModal } from './components/screens/OnboardingModal';
+import { BiometricScanModal } from './components/auth/BiometricScanModal';
 import { AppleToastContainer } from './components/ui/AppleToastContainer';
 import { clsx } from 'clsx';
 
@@ -57,7 +58,10 @@ const MainAppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] text-[var(--text-primary)] flex flex-col font-sans transition-colors duration-200">
+    <div className="relative min-h-screen bg-[var(--app-bg)] text-[var(--text-primary)] flex flex-col font-sans transition-colors duration-200">
+      {/* Dynamic Instagram Liquid Ambient Glow Mesh */}
+      <div className="insta-ambient-mesh" />
+
       {/* Toast notifications */}
       <AppleToastContainer />
 
@@ -72,9 +76,9 @@ const MainAppContent: React.FC = () => {
       {/* Main Content Area */}
       <div 
         className={clsx(
-          "flex-1 flex flex-col min-w-0 transition-all duration-200",
+          "relative z-10 flex-1 flex flex-col min-w-0 transition-all duration-200",
           isSidebarCollapsed ? "md:pl-[68px]" : "md:pl-[220px]",
-          "pb-20 md:pb-6" // Padding for mobile bottom nav on mobile, standard on tablet/desktop
+          "pb-24 md:pb-6" // Padding for floating mobile dock
         )}
       >
         {/* Header Toolbar (Window title bar, centered search pill, window controls) */}
@@ -89,7 +93,7 @@ const MainAppContent: React.FC = () => {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation Bar: Visible ONLY on mobile (< md) */}
+      {/* Mobile Floating Glass Pill Dock (Pixel-perfect to user reference screenshots) */}
       <MobileNav />
 
       {/* Side Inspector Details Panel */}
@@ -106,6 +110,9 @@ const MainAppContent: React.FC = () => {
 
       {/* Mobile & First-Time Onboarding Experience */}
       <OnboardingModal />
+
+      {/* Biometric Fingerprint Sensor Scan Modal */}
+      <BiometricScanModal />
     </div>
   );
 };

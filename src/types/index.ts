@@ -29,6 +29,8 @@ export interface UserAccount {
   googleEmail?: string;
   instagramConnected: boolean;
   instagramHandle?: string;
+  biometricsEnabled?: boolean;
+  biometricsRegistered?: boolean;
 }
 
 export interface SavedItem {

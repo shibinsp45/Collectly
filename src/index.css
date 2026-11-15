@@ -4,54 +4,56 @@
 
 @layer base {
   :root {
-    --app-bg: #F5F5F7;
-    --surface-primary: #FFFFFF;
-    --surface-secondary: #FAFAFA;
-    --surface-elevated: #FFFFFF;
-    --surface-hover: #F0F0F2;
-    --text-primary: #1D1D1F;
-    --text-secondary: #6E6E73;
-    --text-muted: #8E8E93;
-    --border-color: #E5E5EA;
-    --primary-accent: #007AFF;
-    --primary-accent-hover: #0062cc;
-    --accent-subtle: rgba(0, 122, 255, 0.08);
-    --status-success: #248A3D;
-    --status-warning: #B7791F;
-    --status-danger: #D92D20;
+    --app-bg: #F9F7FC;
+    --surface-primary: rgba(255, 255, 255, 0.78);
+    --surface-secondary: rgba(255, 255, 255, 0.6);
+    --surface-elevated: rgba(255, 255, 255, 0.9);
+    --surface-hover: rgba(240, 235, 248, 0.8);
+    --text-primary: #120D1A;
+    --text-secondary: #5D546B;
+    --text-muted: #8E839E;
+    --border-color: rgba(131, 58, 180, 0.12);
     
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.75);
-    --glass-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    --primary-accent: #E1306C;
+    --primary-accent-hover: #C13584;
+    --accent-subtle: rgba(225, 48, 108, 0.1);
+    --status-success: #248A3D;
+    --status-warning: #F56040;
+    --status-danger: #FD1D1D;
+    
+    --glass-bg: rgba(255, 255, 255, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.85);
+    --glass-shadow: 0 12px 36px -4px rgba(131, 58, 180, 0.1);
 
-    --radius-control: 7px;
-    --radius-input: 10px;
-    --radius-card: 12px;
-    --radius-container: 14px;
-    --radius-dialog: 16px;
+    --radius-control: 8px;
+    --radius-input: 12px;
+    --radius-card: 18px;
+    --radius-container: 22px;
+    --radius-dialog: 24px;
     --radius-pill: 999px;
   }
 
   .dark {
-    --app-bg: #121214;
-    --surface-primary: #1A1A1D;
-    --surface-secondary: #222226;
-    --surface-elevated: #26262B;
-    --surface-hover: #26262A;
-    --text-primary: #F5F5F7;
-    --text-secondary: #9B9BA1;
-    --text-muted: #6E6E74;
-    --border-color: rgba(255, 255, 255, 0.07);
-    --primary-accent: #0A84FF;
-    --primary-accent-hover: #0070e0;
-    --accent-subtle: rgba(10, 132, 255, 0.12);
+    --app-bg: #0A0710;
+    --surface-primary: rgba(24, 18, 36, 0.65);
+    --surface-secondary: rgba(30, 22, 46, 0.5);
+    --surface-elevated: rgba(36, 26, 56, 0.75);
+    --surface-hover: rgba(48, 34, 74, 0.6);
+    --text-primary: #FAF8FC;
+    --text-secondary: #B8B0C4;
+    --text-muted: #7E738C;
+    --border-color: rgba(255, 255, 255, 0.1);
+    
+    --primary-accent: #E1306C;
+    --primary-accent-hover: #FD1D1D;
+    --accent-subtle: rgba(225, 48, 108, 0.16);
     --status-success: #30D158;
-    --status-warning: #FFD60A;
-    --status-danger: #FF453A;
+    --status-warning: #FCAF45;
+    --status-danger: #FD1D1D;
 
-    --glass-bg: rgba(22, 22, 24, 0.92);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --glass-bg: rgba(16, 11, 26, 0.68);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.6);
   }
 
   * {
@@ -61,35 +63,90 @@
   body {
     background-color: var(--app-bg);
     color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    overflow-x: hidden;
   }
+}
+
+/* Atmospheric Instagram Ambient Mesh Backdrop */
+.insta-ambient-mesh {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.dark .insta-ambient-mesh {
+  background: 
+    radial-gradient(circle 600px at 15% 15%, rgba(131, 58, 180, 0.28), transparent 70%),
+    radial-gradient(circle 500px at 85% 20%, rgba(225, 48, 108, 0.24), transparent 70%),
+    radial-gradient(circle 600px at 50% 80%, rgba(253, 29, 29, 0.18), transparent 75%),
+    radial-gradient(circle 450px at 80% 85%, rgba(252, 175, 69, 0.14), transparent 70%),
+    #0A0710;
+}
+
+:root:not(.dark) .insta-ambient-mesh {
+  background: 
+    radial-gradient(circle 600px at 15% 10%, rgba(131, 58, 180, 0.1), transparent 70%),
+    radial-gradient(circle 500px at 85% 15%, rgba(225, 48, 108, 0.08), transparent 70%),
+    radial-gradient(circle 550px at 50% 85%, rgba(252, 175, 69, 0.08), transparent 70%),
+    #F9F7FC;
 }
 
 /* Glass material utility */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
 }
 
-.glass-header {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
+.glass-card {
+  background: var(--surface-primary);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--glass-shadow);
 }
 
-.glass-dropdown {
-  background: var(--glass-bg);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+.glass-dock {
+  background: rgba(14, 10, 22, 0.75);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 48px -4px rgba(0, 0, 0, 0.55), 0 0 24px -4px rgba(225, 48, 108, 0.2);
+}
+
+:root:not(.dark) .glass-dock {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 16px 48px -4px rgba(131, 58, 180, 0.15), 0 0 20px rgba(225, 48, 108, 0.1);
+}
+
+/* Instagram Signature Gradient Utilities */
+.insta-gradient-bg {
+  background: linear-gradient(135deg, #833AB4 0%, #C13584 35%, #E1306C 60%, #FD1D1D 80%, #FCAF45 100%);
+}
+
+.insta-gradient-text {
+  background: linear-gradient(135deg, #833AB4 0%, #C13584 35%, #E1306C 60%, #FD1D1D 80%, #FCAF45 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.insta-gradient-border {
+  border-image: linear-gradient(135deg, #833AB4, #E1306C, #FCAF45) 1;
+}
+
+.insta-glow {
+  box-shadow: 0 4px 24px -2px rgba(225, 48, 108, 0.4);
 }
 
 /* Custom scrollbars */
@@ -101,22 +158,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(120, 120, 128, 0.25);
+  background: rgba(131, 58, 180, 0.2);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(120, 120, 128, 0.4);
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none !important;  /* IE and Edge */
-  scrollbar-width: none !important;  /* Firefox */
+  background: rgba(225, 48, 108, 0.4);
 }
