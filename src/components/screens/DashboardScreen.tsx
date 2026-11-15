@@ -50,10 +50,10 @@ export const DashboardScreen: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24 md:pb-20 select-none font-sans text-[var(--text-primary)]">
-      {/* 1. UNIFIED SEARCH BAR: HOVER EXPANDS OPTIONS */}
+    <div className="space-y-3.5 sm:space-y-6 max-w-7xl mx-auto pb-24 md:pb-20 select-none font-sans text-[var(--text-primary)]">
+      {/* 1. UNIFIED SEARCH BAR: ACCESSIBLE 44px TOUCH TARGETS */}
       <div className="space-y-2">
-        <div className="glass-card group relative rounded-[22px] sm:rounded-[24px] p-3 sm:p-4 hover:border-white/30 transition-all duration-300 shadow-md hover:shadow-2xl">
+        <div className="glass-card group relative rounded-[20px] sm:rounded-[24px] p-3 sm:p-4 hover:border-white/30 transition-all duration-300 shadow-md hover:shadow-2xl">
           {/* Hidden File Input for Image Search */}
           <input
             type="file"
@@ -69,8 +69,8 @@ export const DashboardScreen: React.FC = () => {
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 cursor-pointer"
           >
             {/* Natural Language Prompt Area */}
-            <div className="flex-1 flex items-center gap-2.5 sm:gap-3 text-[var(--text-muted)] min-w-0 py-0.5 sm:py-1 pl-1">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 dark:bg-white/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            <div className="flex-1 flex items-center gap-2.5 sm:gap-3 text-[var(--text-muted)] min-w-0 py-1 pl-1">
+              <div className="w-8 h-8 rounded-full bg-white/10 dark:bg-white/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                 <Search size={16} className="text-[#E1306C]" />
               </div>
               <span className="text-[14px] sm:text-[16px] truncate text-[var(--text-secondary)] font-normal group-hover:text-[var(--text-primary)] transition-colors">
@@ -78,7 +78,7 @@ export const DashboardScreen: React.FC = () => {
               </span>
             </div>
 
-            {/* Search Options: Voice, Image, and Ask AI (Enlarge on hover) */}
+            {/* Search Options: Voice, Image, and Ask AI (WCAG 44pt Touch Compliant) */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pt-0.5 sm:pt-0">
               {/* 1. Voice Search Button */}
               <button
@@ -87,10 +87,11 @@ export const DashboardScreen: React.FC = () => {
                   e.stopPropagation();
                   setIsSearchModalOpen(true);
                 }}
-                className="h-8.5 sm:h-9 group-hover:h-10 px-3 sm:px-3.5 group-hover:px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] sm:text-[12.5px] group-hover:text-[13px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs border border-white/10 group-hover:border-white/25 hover:scale-105"
+                className="min-h-[44px] px-3.5 sm:px-4 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] sm:text-[12.5px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs border border-white/10 group-hover:border-white/25 hover:scale-105"
                 title="Search by Voice"
+                aria-label="Search by Voice"
               >
-                <Mic size={13} className="text-[#E1306C]" />
+                <Mic size={14} className="text-[#E1306C]" />
                 <span>Voice</span>
               </button>
 
@@ -101,10 +102,11 @@ export const DashboardScreen: React.FC = () => {
                   e.stopPropagation();
                   imageInputRef.current?.click();
                 }}
-                className="h-8.5 sm:h-9 group-hover:h-10 px-3 sm:px-3.5 group-hover:px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] sm:text-[12.5px] group-hover:text-[13px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs border border-white/10 group-hover:border-white/25 hover:scale-105"
+                className="min-h-[44px] px-3.5 sm:px-4 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] sm:text-[12.5px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs border border-white/10 group-hover:border-white/25 hover:scale-105"
                 title="Search by Image"
+                aria-label="Search by Image"
               >
-                <Camera size={13} className="text-[#34C759]" />
+                <Camera size={14} className="text-[#34C759]" />
                 <span>Image</span>
               </button>
 
@@ -116,10 +118,11 @@ export const DashboardScreen: React.FC = () => {
                   setSearchQuery('Ask AI: ');
                   setIsSearchModalOpen(true);
                 }}
-                className="h-8.5 sm:h-9 group-hover:h-10 px-3.5 sm:px-4.5 group-hover:px-5.5 rounded-full insta-gradient-bg text-white text-[12.5px] sm:text-[13px] group-hover:text-[13.5px] font-semibold flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-md hover:scale-105"
+                className="min-h-[44px] px-4 sm:px-5 rounded-full insta-gradient-bg text-white text-[12.5px] sm:text-[13px] font-semibold flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-md hover:scale-105"
                 title="Ask AI Knowledge Engine"
+                aria-label="Ask AI Knowledge Engine"
               >
-                <Sparkles size={13} />
+                <Sparkles size={14} />
                 <span>Ask AI</span>
               </button>
             </div>
@@ -150,84 +153,60 @@ export const DashboardScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. MOBILE INTERACTIVE WIDGET & SHORTCUTS */}
-      <div className="md:hidden glass-card rounded-[20px] p-3.5 space-y-2.5 border border-white/15 shadow-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6.5 h-6.5 rounded-[8px] insta-gradient-bg text-white flex items-center justify-center font-bold text-[11px] shadow-2xs">
-              📱
-            </div>
-            <div>
-              <h4 className="text-[12.5px] font-bold text-[var(--text-primary)]">Collectly Mobile Widget</h4>
-              <p className="text-[10.5px] text-[var(--text-muted)]">Quick capture & lockscreen shortcuts</p>
-            </div>
-          </div>
+      {/* 2. STREAMLINED 1-LINE MOBILE WIDGET BAR (44px WCAG & Apple HIG Touch Compliant) */}
+      <div className="md:hidden glass-card rounded-[18px] p-1.5 px-2 flex items-center justify-between gap-1 border border-white/15 shadow-sm">
+        {/* Quick Save Link */}
+        <button
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
+          className="flex-1 min-h-[44px] px-2 rounded-[12px] hover:bg-white/10 active:bg-white/20 flex items-center justify-center gap-1.5 text-center transition-all cursor-pointer select-none active:scale-95"
+          aria-label="Quick Save Link"
+        >
+          <Plus size={16} className="text-[#007AFF] shrink-0" strokeWidth={2.4} />
+          <span className="text-[11.5px] font-semibold text-[var(--text-primary)]">Save</span>
+        </button>
 
-          {/* Push Notification Toggle */}
-          <button
-            type="button"
-            onClick={togglePushNotifications}
-            className={clsx(
-              "px-2.5 py-1 rounded-full text-[10.5px] font-semibold flex items-center gap-1 transition-all cursor-pointer",
-              pushNotificationsEnabled
-                ? "bg-[#34C759]/20 text-[#34C759] border border-[#34C759]/30"
-                : "bg-white/10 text-[var(--text-secondary)] border border-white/10"
-            )}
-          >
-            <span>🔔 Push {pushNotificationsEnabled ? 'On' : 'Off'}</span>
-          </button>
-        </div>
+        {/* Sync Reels */}
+        <button
+          type="button"
+          onClick={() => sendMobilePushNotification('Instagram Sync', 'Saved 2 new architecture reels to your library.')}
+          className="flex-1 min-h-[44px] px-2 rounded-[12px] hover:bg-white/10 active:bg-white/20 flex items-center justify-center gap-1.5 text-center transition-all cursor-pointer select-none active:scale-95"
+          aria-label="Sync Instagram Reels"
+        >
+          <InstagramIcon size={16} strokeWidth={2.4} className="shrink-0" />
+          <span className="text-[11.5px] font-semibold text-[var(--text-primary)]">Sync</span>
+        </button>
 
-        {/* 4 Quick Action Keys */}
-        <div className="grid grid-cols-4 gap-2 pt-0.5">
-          <button
-            type="button"
-            onClick={() => setIsAddModalOpen(true)}
-            className="p-2 rounded-[12px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all cursor-pointer"
-          >
-            <Plus size={15} className="text-[#007AFF]" />
-            <span className="text-[10px] font-semibold text-[var(--text-primary)]">Save Link</span>
-          </button>
+        {/* Watch Reels */}
+        <button
+          type="button"
+          onClick={() => setActiveScreen('reels')}
+          className="flex-1 min-h-[44px] px-2 rounded-[12px] hover:bg-white/10 active:bg-white/20 flex items-center justify-center gap-1.5 text-center transition-all cursor-pointer select-none active:scale-95"
+          aria-label="Watch Reels"
+        >
+          <Sparkles size={16} className="text-[#E1306C] shrink-0" />
+          <span className="text-[11.5px] font-semibold text-[var(--text-primary)]">Reels</span>
+        </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              sendMobilePushNotification('Instagram Sync', 'Saved 2 new architecture reels to your library.');
-            }}
-            className="p-2 rounded-[12px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all cursor-pointer"
-          >
-            <InstagramIcon size={15} strokeWidth={2.2} />
-            <span className="text-[10px] font-semibold text-[var(--text-primary)]">Sync Reels</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedTypeFilter('social');
-              setActiveScreen('all-saves');
-            }}
-            className="p-2 rounded-[12px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all cursor-pointer"
-          >
-            <Sparkles size={15} className="text-[#E1306C]" />
-            <span className="text-[10px] font-semibold text-[var(--text-primary)]">Reels</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedTypeFilter('all');
-              setActiveScreen('all-saves');
-            }}
-            className="p-2 rounded-[12px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all cursor-pointer"
-          >
-            <Bookmark size={15} className="text-[#34C759]" />
-            <span className="text-[10px] font-semibold text-[var(--text-primary)]">All Saves</span>
-          </button>
-        </div>
+        {/* Push Notification Toggle */}
+        <button
+          type="button"
+          onClick={togglePushNotifications}
+          className={clsx(
+            "min-h-[44px] px-2.5 rounded-[12px] flex items-center justify-center gap-1 transition-all cursor-pointer select-none shrink-0 active:scale-95",
+            pushNotificationsEnabled
+              ? "bg-[#34C759]/20 text-[#34C759] border border-[#34C759]/30"
+              : "bg-white/10 text-[var(--text-secondary)] border border-white/10"
+          )}
+          title="Push Notification Toggle"
+          aria-label="Push Notification Toggle"
+        >
+          <span className="text-[11px] font-bold">🔔 {pushNotificationsEnabled ? 'On' : 'Off'}</span>
+        </button>
       </div>
 
       {/* 3. RECENT KNOWLEDGE & SAVED STREAM: 2X2 BENTO GRID ON MOBILE */}
-      <section className="space-y-3 pt-1">
+      <section className="space-y-2.5 pt-0.5">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-[13.5px] sm:text-[14.5px] font-bold tracking-tight text-[var(--text-primary)]">
@@ -243,14 +222,15 @@ export const DashboardScreen: React.FC = () => {
               setSelectedTypeFilter('all');
               setActiveScreen('all-saves');
             }}
-            className="text-[11.5px] sm:text-[12px] text-[#007AFF] dark:text-[#0A84FF] hover:underline flex items-center gap-1 font-semibold cursor-pointer active:scale-95 transition-transform"
+            className="min-h-[44px] px-2 text-[12px] text-[#007AFF] dark:text-[#0A84FF] hover:underline flex items-center gap-1 font-semibold cursor-pointer active:scale-95 transition-transform"
+            aria-label="View Full Library"
           >
             <span>View library</span>
             <ArrowRight size={12} />
           </button>
         </div>
 
-        {/* Keyword tags detected from saved content (Swipeable on Mobile) */}
+        {/* Keyword tags detected from saved content (Swipeable on Mobile with 44px touch targets) */}
         {savedKeywords.length > 0 && (
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-2 px-2 sm:mx-0 sm:px-0 no-scrollbar text-[12px] touch-pan-x">
             <span className="text-[10px] sm:text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider shrink-0 mr-1">
@@ -263,7 +243,7 @@ export const DashboardScreen: React.FC = () => {
                   setSearchQuery(keyword);
                   setIsSearchModalOpen(true);
                 }}
-                className="h-6.5 sm:h-7.5 px-2.5 sm:px-3 rounded-[6px] bg-[var(--surface-primary)] hover:bg-[#007AFF]/10 active:bg-[#007AFF]/20 border border-black/[0.06] dark:border-white/[0.08] hover:border-[#007AFF]/40 text-[var(--text-secondary)] hover:text-[#007AFF] text-[11px] sm:text-[12px] font-medium shrink-0 transition-all active:scale-95 cursor-pointer select-none shadow-2xs"
+                className="min-h-[36px] sm:min-h-[40px] px-3 rounded-[8px] bg-[var(--surface-primary)] hover:bg-[#007AFF]/10 active:bg-[#007AFF]/20 border border-black/[0.06] dark:border-white/[0.08] hover:border-[#007AFF]/40 text-[var(--text-secondary)] hover:text-[#007AFF] text-[11px] sm:text-[12px] font-medium shrink-0 transition-all active:scale-95 cursor-pointer select-none shadow-2xs flex items-center"
               >
                 <span>#{keyword}</span>
                 <span className="text-[9.5px] text-[var(--text-muted)] ml-1">({matchedFilesCount})</span>

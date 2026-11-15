@@ -153,23 +153,25 @@ export const AllSavesScreen: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          {/* Quick toggle to dedicated Reels feed */}
+          {/* Quick toggle to dedicated Reels feed (WCAG 44pt Touch Compliant) */}
           <button
             type="button"
             onClick={() => setActiveScreen('reels')}
-            className="flex-1 sm:flex-none h-8.5 sm:h-9 px-3 rounded-[10px] bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-white/10"
+            className="flex-1 sm:flex-none min-h-[44px] px-3.5 rounded-[12px] bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-white/10 active:scale-95"
+            aria-label="Watch Fullscreen Reels"
           >
-            <InstaReelsIcon size={13} className="text-[#E1306C]" />
+            <InstaReelsIcon size={14} className="text-[#E1306C]" />
             <span>Watch Fullscreen Reels</span>
           </button>
 
-          {/* Capture / Upload Button */}
+          {/* Capture / Upload Button (WCAG 44pt Touch Compliant) */}
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="flex-1 sm:flex-none h-8.5 sm:h-9 px-3.5 rounded-[10px] insta-gradient-bg text-white text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="flex-1 sm:flex-none min-h-[44px] px-4 rounded-[12px] insta-gradient-bg text-white text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
+            aria-label="New Save"
           >
-            <Plus size={14} strokeWidth={2.5} />
+            <Plus size={15} strokeWidth={2.5} />
             <span>New Save</span>
           </button>
         </div>
@@ -177,7 +179,7 @@ export const AllSavesScreen: React.FC = () => {
 
       {/* Filter & Toolbar Area */}
       <div className="flex flex-col gap-2">
-        {/* Horizontal Type Scroll Pills */}
+        {/* Horizontal Type Scroll Pills with 44px Touch Targets */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar touch-pan-x">
           {typesList.map(type => {
             const isSelected = selectedTypeFilter === type.id;
@@ -186,11 +188,12 @@ export const AllSavesScreen: React.FC = () => {
                 key={type.id}
                 onClick={() => setSelectedTypeFilter(type.id)}
                 className={clsx(
-                  "h-7.5 sm:h-8 px-3 sm:px-3.5 rounded-full text-[12px] sm:text-[12.5px] font-medium transition-all select-none whitespace-nowrap cursor-pointer",
+                  "min-h-[40px] px-3.5 rounded-full text-[12px] sm:text-[12.5px] font-medium transition-all select-none whitespace-nowrap cursor-pointer flex items-center",
                   isSelected
                     ? "insta-gradient-bg text-white shadow-xs font-semibold scale-102"
                     : "glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-white/25"
                 )}
+                aria-label={type.label}
               >
                 {type.label}
               </button>

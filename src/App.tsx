@@ -24,13 +24,57 @@ import { AuthConnectModal } from './components/screens/AuthConnectModal';
 import { OnboardingModal } from './components/screens/OnboardingModal';
 import { BiometricScanModal } from './components/auth/BiometricScanModal';
 import { AppleToastContainer } from './components/ui/AppleToastContainer';
+import { ScreenId } from './types';
 import { clsx } from 'clsx';
 
 const MainAppContent: React.FC = () => {
-  const { activeScreen } = useCollectly();
+  const { activeScreen, setActiveScreen } = useCollectly();
   // Default to collapsed vertical rail dock (68px) to match Creative Cloud Desktop layout!
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  // Swipe gesture state for Instagram-style horizontal page transitions
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+
+  const swipeScreens: ScreenId[] = ['dashboard', 'all-saves', 'reels', 'settings'];
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('.touch-pan-x, input, textarea, select, nav')) return;
+    if (e.touches.length === 1) {
+      setTouchStartX(e.touches[0].clientX);
+      setTouchStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null || touchStartY === null) return;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = endX - touchStartX;
+    const diffY = endY - touchStartY;
+
+    // Must be predominantly horizontal gesture (> 45px)
+    if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.3) {
+      const currentIndex = swipeScreens.indexOf(activeScreen);
+      if (currentIndex !== -1) {
+        if (diffX < 0 && currentIndex < swipeScreens.length - 1) {
+          // Swipe left -> Next screen
+          setSwipeDirection('left');
+          setActiveScreen(swipeScreens[currentIndex + 1]);
+        } else if (diffX > 0 && currentIndex > 0) {
+          // Swipe right -> Previous screen
+          setSwipeDirection('right');
+          setActiveScreen(swipeScreens[currentIndex - 1]);
+        }
+      }
+    }
+
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
 
   // Render current screen component
   const renderScreen = () => {
@@ -90,8 +134,17 @@ const MainAppContent: React.FC = () => {
           isSidebarCollapsed={isSidebarCollapsed}
         />
 
-        {/* Dynamic Screen View */}
-        <main className="flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto">
+        {/* Dynamic Screen View with Instagram Swipe Left / Right Navigation */}
+        <main 
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          key={activeScreen}
+          className={clsx(
+            "flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto",
+            swipeDirection === 'left' && "animate-in slide-in-from-right-4 fade-in duration-200",
+            swipeDirection === 'right' && "animate-in slide-in-from-left-4 fade-in duration-200"
+          )}
+        >
           {renderScreen()}
         </main>
       </div>

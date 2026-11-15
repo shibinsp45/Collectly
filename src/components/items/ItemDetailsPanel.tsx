@@ -161,28 +161,30 @@ export const ItemDetailsPanel: React.FC = () => {
             </span>
           </div>
 
-          {/* Right Toolbar Actions */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Right Toolbar Actions (WCAG 2.2 AA 44x44pt Touch Targets) */}
+          <div className="flex items-center gap-1 shrink-0">
             {/* Pin / Unpin */}
             <button
               onClick={() => togglePinItem(selectedItem.id)}
               className={clsx(
-                "p-2 rounded-full hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer",
+                "min-w-[44px] min-h-[44px] rounded-full hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer flex items-center justify-center",
                 selectedItem.isPinned ? "text-[#E1306C]" : "text-[var(--text-secondary)]"
               )}
               title={selectedItem.isPinned ? "Unpin item" : "Pin item to top"}
+              aria-label={selectedItem.isPinned ? "Unpin item" : "Pin item to top"}
             >
-              <Pin size={16} fill={selectedItem.isPinned ? "currentColor" : "none"} />
+              <Pin size={17} fill={selectedItem.isPinned ? "currentColor" : "none"} />
             </button>
 
             {/* Copy Link */}
             {selectedItem.url && (
               <button
                 onClick={handleCopyLink}
-                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer flex items-center justify-center"
                 title="Copy URL"
+                aria-label="Copy URL"
               >
-                {copied ? <Check size={16} className="text-[#34C759]" /> : <Copy size={16} />}
+                {copied ? <Check size={17} className="text-[#34C759]" /> : <Copy size={17} />}
               </button>
             )}
 
@@ -192,10 +194,11 @@ export const ItemDetailsPanel: React.FC = () => {
                 href={selectedItem.url}
                 target="_blank"
                 rel="noreferrer"
-                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#007AFF] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] rounded-full text-[var(--text-secondary)] hover:text-[#007AFF] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer flex items-center justify-center"
                 title="Open original link"
+                aria-label="Open original link"
               >
-                <ExternalLink size={16} />
+                <ExternalLink size={17} />
               </a>
             )}
 
@@ -203,37 +206,41 @@ export const ItemDetailsPanel: React.FC = () => {
             {selectedItem.isArchived ? (
               <button
                 onClick={() => restoreItem(selectedItem.id)}
-                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#34C759] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] rounded-full text-[var(--text-secondary)] hover:text-[#34C759] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer flex items-center justify-center"
                 title="Restore item"
+                aria-label="Restore item"
               >
-                <RotateCcw size={16} />
+                <RotateCcw size={17} />
               </button>
             ) : (
               <button
                 onClick={() => archiveItem(selectedItem.id)}
-                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#FF9500] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] rounded-full text-[var(--text-secondary)] hover:text-[#FF9500] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer flex items-center justify-center"
                 title="Archive item"
+                aria-label="Archive item"
               >
-                <Archive size={16} />
+                <Archive size={17} />
               </button>
             )}
 
             {/* Delete */}
             <button
               onClick={() => deleteItem(selectedItem.id)}
-              className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#FD1D1D] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+              className="min-w-[44px] min-h-[44px] rounded-full text-[var(--text-secondary)] hover:text-[#FD1D1D] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer flex items-center justify-center"
               title="Delete item"
+              aria-label="Delete item"
             >
-              <Trash2 size={16} />
+              <Trash2 size={17} />
             </button>
 
-            {/* Close Button */}
+            {/* Close Button - 44px Accessible Touch Target */}
             <button
               onClick={() => setSelectedItem(null)}
-              className="ml-2 w-8 h-8 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] flex items-center justify-center transition-all cursor-pointer border border-white/10 active:scale-95"
+              className="ml-1 min-w-[44px] min-h-[44px] rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] flex items-center justify-center transition-all cursor-pointer border border-white/10 active:scale-95"
               title="Close preview (Esc)"
+              aria-label="Close preview"
             >
-              <X size={17} strokeWidth={2.2} />
+              <X size={18} strokeWidth={2.4} />
             </button>
           </div>
         </div>
