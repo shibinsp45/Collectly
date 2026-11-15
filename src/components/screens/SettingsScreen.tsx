@@ -329,21 +329,76 @@ export const SettingsScreen: React.FC = () => {
               </p>
             </div>
 
-            {/* Theme Selector */}
-            <div className="flex items-center justify-between py-1">
-              <div>
-                <p className="text-[13.5px] font-medium text-[var(--text-primary)]">Color Theme</p>
-                <p className="text-[12px] text-[var(--text-muted)]">Switch between Liquid Light, Dark, or System mode</p>
+            {/* Visual Theme Selection Cards */}
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">Color Theme</p>
+                  <p className="text-[11.5px] text-[var(--text-muted)]">Switch between Liquid Light, Dark, or System mode</p>
+                </div>
+                <SwiftSegmentedControl<ThemeMode>
+                  options={[
+                    { value: 'light', label: 'Light', icon: Sun },
+                    { value: 'dark', label: 'Dark', icon: Moon },
+                    { value: 'system', label: 'Auto', icon: Laptop },
+                  ]}
+                  value={theme}
+                  onChange={setTheme}
+                />
               </div>
-              <SwiftSegmentedControl<ThemeMode>
-                options={[
-                  { value: 'light', label: 'Light', icon: Sun },
-                  { value: 'dark', label: 'Dark', icon: Moon },
-                  { value: 'system', label: 'Auto', icon: Laptop },
-                ]}
-                value={theme}
-                onChange={setTheme}
-              />
+
+              <div className="grid grid-cols-3 gap-2.5 pt-1">
+                {/* Light Mode Card */}
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={clsx(
+                    "p-3 rounded-[16px] border-2 transition-all flex flex-col items-center gap-2 text-center cursor-pointer active:scale-95",
+                    theme === 'light'
+                      ? "border-[#E1306C] bg-white/20 dark:bg-white/10 shadow-md ring-2 ring-[#E1306C]/30"
+                      : "border-black/[0.08] dark:border-white/[0.1] hover:border-white/20"
+                  )}
+                >
+                  <div className="w-full h-12 rounded-[10px] bg-[#F9F7FC] border border-black/10 flex items-center justify-center text-[#1C1C1E] shadow-2xs">
+                    <Sun size={20} className="text-[#FF9500]" />
+                  </div>
+                  <span className="text-[12px] font-semibold text-[var(--text-primary)]">Light Mode</span>
+                </button>
+
+                {/* Dark Mode Card */}
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={clsx(
+                    "p-3 rounded-[16px] border-2 transition-all flex flex-col items-center gap-2 text-center cursor-pointer active:scale-95",
+                    theme === 'dark'
+                      ? "border-[#E1306C] bg-white/20 dark:bg-white/10 shadow-md ring-2 ring-[#E1306C]/30"
+                      : "border-black/[0.08] dark:border-white/[0.1] hover:border-white/20"
+                  )}
+                >
+                  <div className="w-full h-12 rounded-[10px] bg-[#0A0710] border border-white/10 flex items-center justify-center text-white shadow-2xs">
+                    <Moon size={20} className="text-[#E1306C]" />
+                  </div>
+                  <span className="text-[12px] font-semibold text-[var(--text-primary)]">Dark Mode</span>
+                </button>
+
+                {/* System / Auto Mode Card */}
+                <button
+                  type="button"
+                  onClick={() => setTheme('system')}
+                  className={clsx(
+                    "p-3 rounded-[16px] border-2 transition-all flex flex-col items-center gap-2 text-center cursor-pointer active:scale-95",
+                    theme === 'system'
+                      ? "border-[#E1306C] bg-white/20 dark:bg-white/10 shadow-md ring-2 ring-[#E1306C]/30"
+                      : "border-black/[0.08] dark:border-white/[0.1] hover:border-white/20"
+                  )}
+                >
+                  <div className="w-full h-12 rounded-[10px] bg-gradient-to-r from-[#F9F7FC] to-[#0A0710] border border-black/10 dark:border-white/10 flex items-center justify-center text-[var(--text-primary)] shadow-2xs">
+                    <Laptop size={20} className="text-[#007AFF]" />
+                  </div>
+                  <span className="text-[12px] font-semibold text-[var(--text-primary)]">System Auto</span>
+                </button>
+              </div>
             </div>
 
             <div className="h-px bg-black/[0.06] dark:bg-white/[0.08]" />

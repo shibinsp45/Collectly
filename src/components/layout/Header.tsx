@@ -79,29 +79,6 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Fingerprint size={16} strokeWidth={2.2} />
         </button>
-
-        {/* Notifications Bell */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => showToast('Push Notifications Active', 'Realtime sync for Instagram Reels and Google Drive saves.', 'info')}
-            className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
-            title="Notifications"
-          >
-            <Bell size={16} />
-          </button>
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#FD1D1D] rounded-full animate-pulse" />
-        </div>
-
-        {/* Dark & White Mode Toggle */}
-        <button
-          type="button"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
-          title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
       </div>
     </header>
   );

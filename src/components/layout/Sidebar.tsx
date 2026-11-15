@@ -3,9 +3,7 @@ import {
   Plus, 
   Menu,
   X,
-  Sun,
-  Moon,
-  Laptop,
+  Bell,
   ChevronRight
 } from 'lucide-react';
 import { 
@@ -48,7 +46,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setSelectedTagFilter,
     setIsOnboardingOpen,
     theme,
-    setTheme
+    setTheme,
+    showToast
   } = useCollectly();
 
   // Accordion state for Collections and Categories in sidebar - Collapsed by default!
@@ -101,6 +100,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Collections', 
       icon: InstaGridIcon, 
       onClick: () => handleNav('collections') 
+    },
+    { 
+      key: 'notifications', 
+      id: 'notifications' as any, 
+      label: 'Notifications', 
+      icon: Bell, 
+      hasBadge: true,
+      onClick: () => { 
+        showToast('Notifications (3 New)', 'Realtime sync active for Instagram Reels and Google Drive saves.', 'info'); 
+      } 
     },
   ];
 
@@ -217,7 +226,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     {isActive && (
                       <span className="absolute left-0 top-2 bottom-2 w-[3px] insta-gradient-bg rounded-r" />
                     )}
-                    <Icon size={20} filled={isActive} strokeWidth={2} className={clsx("transition-transform group-hover:scale-105", isActive ? "text-white" : "text-[var(--text-secondary)]")} />
+                    <div className="relative">
+                      <Icon size={20} filled={isActive} strokeWidth={2} className={clsx("transition-transform group-hover:scale-105", isActive ? "text-white" : "text-[var(--text-secondary)]")} />
+                      {item.hasBadge && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FD1D1D] rounded-full border border-white dark:border-[#120B1C] animate-pulse" />
+                      )}
+                    </div>
                     <span className="text-[10px] tracking-tight leading-tight text-center truncate max-w-[56px]">
                       {item.label}
                     </span>
@@ -231,14 +245,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   key={item.key}
                   onClick={item.onClick}
                   className={clsx(
-                    "w-full h-9.5 px-3 rounded-[10px] flex items-center gap-3 text-[13px] font-medium transition-all cursor-pointer active:scale-98",
+                    "w-full h-9.5 px-3 rounded-[10px] flex items-center justify-between gap-3 text-[13px] font-medium transition-all cursor-pointer active:scale-98",
                     isActive 
                       ? "insta-gradient-bg text-white font-semibold shadow-[0_4px_16px_rgba(225,48,108,0.35)]" 
                       : "text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
                   )}
                 >
-                  <Icon size={18} filled={isActive} strokeWidth={2} className={isActive ? "text-white" : "text-[var(--text-muted)]"} />
-                  <span className="flex-1 text-left truncate">{item.label}</span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="relative shrink-0">
+                      <Icon size={18} filled={isActive} strokeWidth={2} className={isActive ? "text-white" : "text-[var(--text-muted)]"} />
+                      {item.hasBadge && (
+                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#FD1D1D] rounded-full animate-pulse" />
+                      )}
+                    </div>
+                    <span className="truncate">{item.label}</span>
+                  </div>
+                  {item.hasBadge && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#FD1D1D] text-white shrink-0">
+                      3
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -413,7 +439,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 type="button"
                 onClick={() => handleNav('settings')}
                 className={clsx(
-                  "h-9 px-3 rounded-[10px] flex items-center gap-2.5 text-[13px] font-medium transition-all cursor-pointer active:scale-95",
+                  "w-full h-9.5 px-3 rounded-[10px] flex items-center gap-2.5 text-[13px] font-medium transition-all cursor-pointer active:scale-95",
                   activeScreen === 'settings'
                     ? "insta-gradient-bg text-white shadow-md font-semibold"
                     : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.08]"
@@ -423,34 +449,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <InstaGearIcon size={18} filled={activeScreen === 'settings'} strokeWidth={2} />
                 <span>Settings</span>
               </button>
-
-              {/* Theme Selector */}
-              <div className="flex items-center bg-black/[0.06] dark:bg-white/[0.08] p-0.5 rounded-[8px]">
-                <button
-                  type="button"
-                  onClick={() => setTheme('light')}
-                  className={clsx("p-1.5 rounded-[6px] cursor-pointer", theme === 'light' ? "bg-white text-black shadow-2xs" : "text-[var(--text-secondary)]")}
-                  title="Light"
-                >
-                  <Sun size={12} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTheme('dark')}
-                  className={clsx("p-1.5 rounded-[6px] cursor-pointer", theme === 'dark' ? "bg-[#2C2C2E] text-white shadow-2xs" : "text-[var(--text-secondary)]")}
-                  title="Dark"
-                >
-                  <Moon size={12} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTheme('system')}
-                  className={clsx("p-1.5 rounded-[6px] cursor-pointer", theme === 'system' ? "bg-white dark:bg-[#2C2C2E] text-[#E1306C] shadow-2xs" : "text-[var(--text-secondary)]")}
-                  title="System"
-                >
-                  <Laptop size={12} />
-                </button>
-              </div>
             </div>
           )}
         </div>
