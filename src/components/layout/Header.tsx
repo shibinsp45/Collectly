@@ -69,28 +69,28 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        {/* Biometric Fingerprint Quick Unlock Button */}
+        {/* MOBILE ONLY: Biometric Fingerprint & PIN Lock Security Button (Removed on desktop and tablet) */}
         <button
           type="button"
           onClick={() => setIsBiometricModalOpen(true)}
-          className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[var(--text-secondary)] hover:text-[#E1306C] dark:hover:text-[#FD1D1D] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
-          title={isBiometricsEnabled ? "Unlock with Fingerprint" : "Enrolled Fingerprint Sensor"}
-          aria-label="Biometric Fingerprint Unlock"
+          className="md:hidden w-8 h-8 flex items-center justify-center rounded-[8px] text-[#E1306C] dark:text-[#FD1D1D] bg-white/10 dark:bg-white/[0.06] hover:bg-white/20 active:scale-95 transition-all cursor-pointer border border-white/10 shadow-2xs"
+          title="Mobile Fingerprint & Phone PIN Lock"
+          aria-label="Mobile Fingerprint & Phone PIN Lock"
         >
-          <Fingerprint size={16} strokeWidth={2} />
+          <Fingerprint size={16} strokeWidth={2.2} />
         </button>
 
         {/* Notifications Bell */}
         <div className="relative">
           <button
             type="button"
-            onClick={() => showToast('Notifications', 'All your Instagram and Google saves are up to date.', 'info')}
+            onClick={() => showToast('Push Notifications Active', 'Realtime sync for Instagram Reels and Google Drive saves.', 'info')}
             className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
             title="Notifications"
           >
             <Bell size={16} />
           </button>
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#FD1D1D] rounded-full" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#FD1D1D] rounded-full animate-pulse" />
         </div>
 
         {/* Dark & White Mode Toggle */}
@@ -101,18 +101,6 @@ export const Header: React.FC<HeaderProps> = ({
           title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
         >
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
-
-        {/* Profile Avatar with Instagram Gradient Ring */}
-        <button 
-          type="button"
-          onClick={() => setIsAuthModalOpen(true)}
-          className="relative p-[1.5px] rounded-full insta-gradient-bg cursor-pointer shadow-xs active:scale-95 transition-transform ml-1 group"
-          title="Open Profile & Sync Details"
-        >
-          <div className="w-7 h-7 rounded-full bg-[#120B1C] text-white flex items-center justify-center font-bold text-[12px]">
-            {user.avatar || 'A'}
-          </div>
         </button>
       </div>
     </header>

@@ -45,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setSelectedCategoryId,
     setIsAddModalOpen,
     setSelectedTypeFilter,
+    setSelectedTagFilter,
     setIsOnboardingOpen,
     theme,
     setTheme
@@ -58,6 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setActiveScreen(screen);
     setSelectedCollectionId(null);
     setSelectedCategoryId(null);
+    setSelectedTagFilter(null);
     setIsMobileOpen(false);
   };
 
@@ -66,11 +68,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isRail = isCollapsed && !isMobileOpen;
 
   const navItems = [
-    { id: 'dashboard' as ScreenId, label: 'Home', icon: InstaHomeIcon, onClick: () => handleNav('dashboard') },
-    { id: 'all-saves' as ScreenId, label: 'Saves', icon: InstaBookmarkIcon, onClick: () => { setSelectedTypeFilter('all'); handleNav('all-saves'); } },
-    { id: 'all-saves' as ScreenId, label: 'Reels & Posts', icon: InstaReelsIcon, onClick: () => { setSelectedTypeFilter('social'); handleNav('all-saves'); } },
-    { id: 'collections' as ScreenId, label: 'Collections', icon: InstaGridIcon, onClick: () => handleNav('collections') },
-    { id: 'settings' as ScreenId, label: 'Settings', icon: InstaGearIcon, onClick: () => handleNav('settings') },
+    { 
+      key: 'home', 
+      id: 'dashboard' as ScreenId, 
+      label: 'Home', 
+      icon: InstaHomeIcon, 
+      onClick: () => handleNav('dashboard') 
+    },
+    { 
+      key: 'saves', 
+      id: 'all-saves' as ScreenId, 
+      label: 'Saves', 
+      icon: InstaBookmarkIcon, 
+      onClick: () => { 
+        setSelectedTypeFilter('all'); 
+        handleNav('all-saves'); 
+      } 
+    },
+    { 
+      key: 'reels', 
+      id: 'reels' as ScreenId, 
+      label: 'Reels', 
+      icon: InstaReelsIcon, 
+      onClick: () => { 
+        setSelectedTypeFilter('all'); 
+        handleNav('reels'); 
+      } 
+    },
+    { 
+      key: 'collections', 
+      id: 'collections' as ScreenId, 
+      label: 'Collections', 
+      icon: InstaGridIcon, 
+      onClick: () => handleNav('collections') 
+    },
   ];
 
   return (
@@ -157,27 +188,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex-1 py-3 px-2 space-y-3 overflow-y-auto no-scrollbar">
           {/* Navigation Items */}
           <div className="space-y-1">
-            {navItems.map((item, index) => {
-              const isActive = activeScreen === item.id;
+            {navItems.map((item) => {
+              const isActive = 
+                item.key === 'home' 
+                  ? activeScreen === 'dashboard'
+                  : item.key === 'saves' 
+                  ? activeScreen === 'all-saves'
+                  : item.key === 'reels' 
+                  ? activeScreen === 'reels'
+                  : item.key === 'collections' 
+                  ? activeScreen === 'collections' || activeScreen === 'collection-detail'
+                  : false;
               const Icon = item.icon;
 
               if (isRail) {
                 return (
                   <button
-                    key={`${item.label}-${index}`}
+                    key={item.key}
                     onClick={item.onClick}
                     title={item.label}
                     className={clsx(
-                      "w-full py-2.5 px-1 rounded-[10px] flex flex-col items-center justify-center gap-1 transition-all cursor-pointer group relative",
+                      "w-full py-2.5 px-1 rounded-[12px] flex flex-col items-center justify-center gap-1 transition-all cursor-pointer group relative",
                       isActive 
-                        ? "text-[var(--text-primary)] bg-white/20 dark:bg-white/10 font-semibold shadow-inner scale-105" 
-                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+                        ? "text-white bg-white/20 dark:bg-white/15 font-semibold shadow-inner scale-105" 
+                        : "text-[var(--text-secondary)] hover:text-white hover:bg-white/5"
                     )}
                   >
                     {isActive && (
                       <span className="absolute left-0 top-2 bottom-2 w-[3px] insta-gradient-bg rounded-r" />
                     )}
-                    <Icon size={20} filled={isActive} strokeWidth={isActive ? 2.4 : 1.8} className={clsx("transition-transform group-hover:scale-105", isActive && "text-[#E1306C] dark:text-[#FD1D1D]")} />
+                    <Icon size={20} filled={isActive} strokeWidth={2} className={clsx("transition-transform group-hover:scale-105", isActive ? "text-white" : "text-[var(--text-secondary)]")} />
                     <span className="text-[10px] tracking-tight leading-tight text-center truncate max-w-[56px]">
                       {item.label}
                     </span>
@@ -188,7 +228,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               // Full Expanded Mode with item names
               return (
                 <button
-                  key={`${item.label}-${index}`}
+                  key={item.key}
                   onClick={item.onClick}
                   className={clsx(
                     "w-full h-9.5 px-3 rounded-[10px] flex items-center gap-3 text-[13px] font-medium transition-all cursor-pointer active:scale-98",
@@ -197,7 +237,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : "text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
                   )}
                 >
-                  <Icon size={18} filled={isActive} strokeWidth={isActive ? 2.4 : 1.8} className={isActive ? "text-white" : "text-[var(--text-muted)]"} />
+                  <Icon size={18} filled={isActive} strokeWidth={2} className={isActive ? "text-white" : "text-[var(--text-muted)]"} />
                   <span className="flex-1 text-left truncate">{item.label}</span>
                 </button>
               );
@@ -346,79 +386,73 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Bottom Rail: Settings, Theme and User Profile */}
-        <div className="p-2.5 border-t border-black/[0.06] dark:border-white/[0.06] space-y-2">
+        {/* Bottom Rail: Settings on Bottom Left, Theme and User Profile */}
+        <div className="p-2.5 border-t border-black/[0.06] dark:border-white/[0.06] space-y-2.5">
           {isRail ? (
             <button
+              type="button"
               onClick={() => handleNav('settings')}
               title="Settings"
               className={clsx(
-                "w-full py-2 rounded-[8px] flex flex-col items-center justify-center gap-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors cursor-pointer",
-                activeScreen === 'settings' && "text-[var(--text-primary)] bg-black/[0.08] dark:bg-white/[0.12]"
+                "w-full py-2.5 px-1 rounded-[12px] flex flex-col items-center justify-center gap-1 transition-all cursor-pointer group relative",
+                activeScreen === 'settings' 
+                  ? "text-white bg-white/20 dark:bg-white/15 font-semibold shadow-inner scale-105" 
+                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/5"
               )}
             >
-              <InstaGearIcon size={18} filled={activeScreen === 'settings'} />
-              <span className="text-[10px]">Settings</span>
+              {activeScreen === 'settings' && (
+                <span className="absolute left-0 top-2 bottom-2 w-[3px] insta-gradient-bg rounded-r" />
+              )}
+              <InstaGearIcon size={20} filled={activeScreen === 'settings'} strokeWidth={2} className={clsx("transition-transform group-hover:scale-105", activeScreen === 'settings' ? "text-white" : "text-[var(--text-secondary)]")} />
+              <span className="text-[10px] tracking-tight leading-tight">Settings</span>
             </button>
           ) : (
-            <button
-              onClick={() => handleNav('settings')}
-              className={clsx(
-                "w-full h-8.5 px-3 rounded-[7px] flex items-center gap-2.5 text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors cursor-pointer",
-                activeScreen === 'settings' && "bg-black/[0.08] dark:bg-white/[0.12] text-[var(--text-primary)] font-medium"
-              )}
-            >
-              <InstaGearIcon size={16} filled={activeScreen === 'settings'} />
-              <span>Settings</span>
-            </button>
-          )}
-
-          {/* User Avatar Circle and Details */}
-          <div className={clsx("flex items-center", isRail ? "justify-center" : "justify-between px-1")}>
-            <div 
-              onClick={() => handleNav('settings')}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <div 
-                className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#007AFF] to-[#5856D6] text-white flex items-center justify-center text-[12px] font-bold shadow-xs shrink-0"
-                title="Ansu (Pro Plan)"
+            <div className="flex items-center justify-between">
+              {/* Bottom Left Settings Button */}
+              <button
+                type="button"
+                onClick={() => handleNav('settings')}
+                className={clsx(
+                  "h-9 px-3 rounded-[10px] flex items-center gap-2.5 text-[13px] font-medium transition-all cursor-pointer active:scale-95",
+                  activeScreen === 'settings'
+                    ? "insta-gradient-bg text-white shadow-md font-semibold"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.08]"
+                )}
+                title="Settings"
               >
-                A
-              </div>
-              {!isRail && (
-                <div className="flex flex-col">
-                  <span className="text-[12px] font-semibold text-[var(--text-primary)] leading-tight">Ansu</span>
-                  <span className="text-[10px] text-[var(--text-muted)]">Pro Plan</span>
-                </div>
-              )}
-            </div>
+                <InstaGearIcon size={18} filled={activeScreen === 'settings'} strokeWidth={2} />
+                <span>Settings</span>
+              </button>
 
-            {!isRail && (
-              <div className="flex items-center bg-black/[0.06] dark:bg-white/[0.08] p-0.5 rounded-[6px]">
+              {/* Theme Selector */}
+              <div className="flex items-center bg-black/[0.06] dark:bg-white/[0.08] p-0.5 rounded-[8px]">
                 <button
+                  type="button"
                   onClick={() => setTheme('light')}
-                  className={clsx("p-1 rounded-[4px] cursor-pointer", theme === 'light' ? "bg-white text-black shadow-2xs" : "text-[var(--text-secondary)]")}
+                  className={clsx("p-1.5 rounded-[6px] cursor-pointer", theme === 'light' ? "bg-white text-black shadow-2xs" : "text-[var(--text-secondary)]")}
                   title="Light"
                 >
-                  <Sun size={11} />
+                  <Sun size={12} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setTheme('dark')}
-                  className={clsx("p-1 rounded-[4px] cursor-pointer", theme === 'dark' ? "bg-[#2C2C2E] text-white shadow-2xs" : "text-[var(--text-secondary)]")}
+                  className={clsx("p-1.5 rounded-[6px] cursor-pointer", theme === 'dark' ? "bg-[#2C2C2E] text-white shadow-2xs" : "text-[var(--text-secondary)]")}
                   title="Dark"
                 >
-                  <Moon size={11} />
+                  <Moon size={12} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setTheme('system')}
-                  className={clsx("p-1 rounded-[4px] cursor-pointer", theme === 'system' ? "bg-white dark:bg-[#2C2C2E] text-[#007AFF] shadow-2xs" : "text-[var(--text-secondary)]")}
+                  className={clsx("p-1.5 rounded-[6px] cursor-pointer", theme === 'system' ? "bg-white dark:bg-[#2C2C2E] text-[#E1306C] shadow-2xs" : "text-[var(--text-secondary)]")}
                   title="System"
                 >
-                  <Laptop size={11} />
+                  <Laptop size={12} />
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </aside>
     </>

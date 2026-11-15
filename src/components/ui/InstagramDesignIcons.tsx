@@ -61,12 +61,12 @@ export const InstaReelsIcon: React.FC<IconProps> = ({
   strokeWidth = 2
 }) => {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : "none"} stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <rect x="2.5" y="3.5" width="19" height="17" rx="4" fill={filled ? color : "none"} />
-      <path d="M2.5 8.5h19" stroke={filled ? "#000" : color} strokeWidth={strokeWidth} />
-      <path d="M7 3.5l2 5" stroke={filled ? "#000" : color} strokeWidth={strokeWidth} />
-      <path d="M14 3.5l2 5" stroke={filled ? "#000" : color} strokeWidth={strokeWidth} />
-      <polygon points="10 12 15 15 10 18" fill={filled ? "#000" : color} stroke="none" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2.5" y="3.5" width="19" height="17" rx="4" />
+      <path d="M2.5 8.5h19" />
+      <path d="M7 3.5l2 5" />
+      <path d="M14 3.5l2 5" />
+      <polygon points="10 12 15 15 10 18" fill={color} stroke="none" />
     </svg>
   );
 };
@@ -81,15 +81,8 @@ export const InstaBookmarkIcon: React.FC<IconProps> = ({
   color = 'currentColor',
   strokeWidth = 2
 }) => {
-  if (filled) {
-    return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill={color} className={className}>
-        <path d="M5 3.75A2.75 2.75 0 0 1 7.75 1h8.5A2.75 2.75 0 0 1 19 3.75v17.5a.75.75 0 0 1-1.2.6L12 17.5l-5.8 4.35a.75.75 0 0 1-1.2-.6V3.75z" />
-      </svg>
-    );
-  }
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : "none"} stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
       <path d="M5 3.5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v18l-7-5.25L5 21.5V3.5z" />
     </svg>
   );

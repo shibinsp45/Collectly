@@ -33,6 +33,11 @@ export const DashboardScreen: React.FC = () => {
     setIsSearchModalOpen,
     setIsAuthModalOpen,
     setSearchQuery,
+    pushNotificationsEnabled,
+    togglePushNotifications,
+    sendMobilePushNotification,
+    isWidgetActive,
+    setIsWidgetActive,
     showToast
   } = useCollectly();
 
@@ -164,81 +169,85 @@ export const DashboardScreen: React.FC = () => {
       ) : (
         <>
           {/* ============================================================== */}
-          {/* UNIFIED ALL-IN-ONE SEARCH BOX: ASK AI + VOICE + IMAGE SEARCH   */}
+          {/* UNIFIED ALL-IN-ONE SEARCH BOX: HOVER EXPANDS OPTIONS           */}
           {/* ============================================================== */}
-          <div className="rounded-[16px] bg-[var(--surface-primary)] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.14] dark:hover:border-white/[0.16] p-4 sm:p-5 shadow-2xs transition-all">
-            {/* Hidden File Input for Image Search */}
-            <input
-              type="file"
-              ref={imageInputRef}
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUploadSearch}
-            />
+          <div className="space-y-2.5">
+            <div className="glass-card group relative rounded-[24px] p-3.5 sm:p-4 hover:border-white/30 transition-all duration-300 shadow-lg hover:shadow-2xl">
+              {/* Hidden File Input for Image Search */}
+              <input
+                type="file"
+                ref={imageInputRef}
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUploadSearch}
+              />
 
-            {/* Input Row */}
-            <div 
-              onClick={() => setIsSearchModalOpen(true)}
-              className="flex flex-col sm:flex-row sm:items-center gap-3 cursor-pointer"
-            >
-              {/* Natural Language Prompt Area */}
-              <div className="flex-1 flex items-center gap-2.5 text-[var(--text-muted)] min-w-0 py-1">
-                <Search size={18} className="text-[#007AFF] shrink-0" />
-                <span className="text-[14px] sm:text-[15px] truncate text-[var(--text-secondary)] font-normal">
-                  Ask AI anything, speak by voice, or drop an image...
-                </span>
-              </div>
+              {/* Input Row with larger interactive buttons on hover */}
+              <div 
+                onClick={() => setIsSearchModalOpen(true)}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer"
+              >
+                {/* Natural Language Prompt Area */}
+                <div className="flex-1 flex items-center gap-3 text-[var(--text-muted)] min-w-0 py-1 pl-1">
+                  <div className="w-8 h-8 rounded-full bg-white/10 dark:bg-white/[0.08] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Search size={18} className="text-[#E1306C]" />
+                  </div>
+                  <span className="text-[15px] sm:text-[16px] truncate text-[var(--text-secondary)] font-normal group-hover:text-[var(--text-primary)] transition-colors">
+                    Ask AI anything, speak by voice, or drop an image...
+                  </span>
+                </div>
 
-              {/* Merged Actions: Voice, Image, and Ask AI */}
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pt-1.5 sm:pt-0">
-                {/* 1. Voice Search Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsSearchModalOpen(true);
-                  }}
-                  className="h-8 px-3 rounded-full bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-[var(--text-primary)] text-[12px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs"
-                  title="Search by Voice"
-                >
-                  <Mic size={13.5} className="text-[#007AFF]" />
-                  <span>Voice</span>
-                </button>
+                {/* Search Options: Voice, Image, and Ask AI (Enlarge on hover!) */}
+                <div className="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
+                  {/* 1. Voice Search Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsSearchModalOpen(true);
+                    }}
+                    className="h-9 group-hover:h-10 px-3.5 group-hover:px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12.5px] group-hover:text-[13px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs border border-white/10 group-hover:border-white/25 hover:scale-105"
+                    title="Search by Voice"
+                  >
+                    <Mic size={14} className="text-[#E1306C]" />
+                    <span>Voice</span>
+                  </button>
 
-                {/* 2. Image Search Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    imageInputRef.current?.click();
-                  }}
-                  className="h-8 px-3 rounded-full bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-[var(--text-primary)] text-[12px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs"
-                  title="Search by Image"
-                >
-                  <Camera size={13.5} className="text-[#34C759]" />
-                  <span>Image</span>
-                </button>
+                  {/* 2. Image Search Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      imageInputRef.current?.click();
+                    }}
+                    className="h-9 group-hover:h-10 px-3.5 group-hover:px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12.5px] group-hover:text-[13px] font-medium flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-2xs border border-white/10 group-hover:border-white/25 hover:scale-105"
+                    title="Search by Image"
+                  >
+                    <Camera size={14} className="text-[#34C759]" />
+                    <span>Image</span>
+                  </button>
 
-                {/* 3. Ask AI Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSearchQuery('Ask AI: ');
-                    setIsSearchModalOpen(true);
-                  }}
-                  className="h-8 px-3.5 rounded-full bg-[#007AFF] hover:bg-[#0069D9] text-white text-[12px] font-semibold flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
-                  title="Ask AI Knowledge Engine"
-                >
-                  <Sparkles size={13} />
-                  <span>Ask AI</span>
-                </button>
+                  {/* 3. Ask AI Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSearchQuery('Ask AI: ');
+                      setIsSearchModalOpen(true);
+                    }}
+                    className="h-9 group-hover:h-10 px-4.5 group-hover:px-5.5 rounded-full insta-gradient-bg text-white text-[13px] group-hover:text-[13.5px] font-semibold flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-md hover:scale-105"
+                    title="Ask AI Knowledge Engine"
+                  >
+                    <Sparkles size={14} />
+                    <span>Ask AI</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Quick Suggestion Prompts */}
-            <div className="flex items-center gap-1.5 pt-2 mt-1 overflow-x-auto no-scrollbar text-[11.5px] -mx-1 px-1 touch-pan-x">
-              <span className="text-[var(--text-muted)] font-medium shrink-0">Try asking:</span>
+            {/* Quick Suggestion Prompts Row - Placed directly below the search bar */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 touch-pan-x">
+              <span className="text-[12.5px] text-[var(--text-muted)] font-medium shrink-0">Try asking:</span>
               {[
                 "Summarize my recent reads",
                 "Find minimalist architecture",
@@ -252,11 +261,83 @@ export const DashboardScreen: React.FC = () => {
                     setSearchQuery(prompt);
                     setIsSearchModalOpen(true);
                   }}
-                  className="px-2.5 py-1 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0 transition-colors cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-[10px] glass-card hover:bg-white/15 dark:hover:bg-white/10 text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[12px] sm:text-[12.5px] whitespace-nowrap shrink-0 transition-all cursor-pointer border border-white/10 shadow-2xs active:scale-95"
                 >
                   "{prompt}"
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* MOBILE INTERACTIVE WIDGET & PUSH NOTIFICATION CONTROLS        */}
+          {/* ============================================================== */}
+          <div className="md:hidden glass-card rounded-[22px] p-4 space-y-3 border border-white/15 shadow-md">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-[8px] insta-gradient-bg text-white flex items-center justify-center font-bold text-[11px] shadow-2xs">
+                  📱
+                </div>
+                <div>
+                  <h4 className="text-[13px] font-bold text-[var(--text-primary)]">Collectly Mobile Widget</h4>
+                  <p className="text-[11px] text-[var(--text-muted)]">Lock screen & Quick Capture shortcuts</p>
+                </div>
+              </div>
+
+              {/* Push Notification Toggle */}
+              <button
+                type="button"
+                onClick={togglePushNotifications}
+                className={clsx(
+                  "px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 transition-all",
+                  pushNotificationsEnabled
+                    ? "bg-[#34C759]/20 text-[#34C759] border border-[#34C759]/30"
+                    : "bg-white/10 text-[var(--text-secondary)] border border-white/10"
+                )}
+              >
+                <span>🔔 Push {pushNotificationsEnabled ? 'On' : 'Off'}</span>
+              </button>
+            </div>
+
+            {/* Mobile 4-Key Quick Bento Widget Bar */}
+            <div className="grid grid-cols-4 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsAddModalOpen(true)}
+                className="p-2.5 rounded-[14px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all"
+              >
+                <Plus size={16} className="text-[#007AFF]" />
+                <span className="text-[10.5px] font-semibold text-[var(--text-primary)]">Save Link</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  sendMobilePushNotification('Instagram Sync', 'Saved 2 new architecture reels to your library.');
+                }}
+                className="p-2.5 rounded-[14px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all"
+              >
+                <InstagramIcon size={16} strokeWidth={2.2} />
+                <span className="text-[10.5px] font-semibold text-[var(--text-primary)]">Sync Reels</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveScreen('reels')}
+                className="p-2.5 rounded-[14px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all"
+              >
+                <Sparkles size={16} className="text-[#E1306C]" />
+                <span className="text-[10.5px] font-semibold text-[var(--text-primary)]">Watch Reels</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveScreen('all-saves')}
+                className="p-2.5 rounded-[14px] glass-card flex flex-col items-center justify-center gap-1 text-center hover:bg-white/15 active:scale-95 transition-all"
+              >
+                <Bookmark size={16} className="text-[#34C759]" />
+                <span className="text-[10.5px] font-semibold text-[var(--text-primary)]">Saved Files</span>
+              </button>
             </div>
           </div>
 
@@ -275,11 +356,11 @@ export const DashboardScreen: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               
               {/* Card 1: Instagram Saves */}
-              <div className="p-4 rounded-[12px] bg-[var(--surface-primary)] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.14] dark:hover:border-white/[0.16] transition-all flex flex-col justify-between gap-3 shadow-2xs">
+              <div className="glass-card p-4.5 rounded-[22px] hover:border-white/25 transition-all duration-300 hover:scale-[1.01] flex flex-col justify-between gap-3 shadow-md">
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-[8px] bg-gradient-to-tr from-[#FD1D1D] via-[#E1306C] to-[#833AB4] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                      <div className="w-8 h-8 rounded-[10px] insta-gradient-bg text-white flex items-center justify-center shrink-0 shadow-2xs">
                         <InstagramIcon size={17} strokeWidth={2.2} />
                       </div>
                       <div>
@@ -313,7 +394,7 @@ export const DashboardScreen: React.FC = () => {
                 <div className="flex justify-end pt-1">
                   <button
                     onClick={() => handleOpenType('social')}
-                    className="h-8 sm:h-7.5 px-4.5 rounded-full border border-black/[0.15] dark:border-white/20 active:bg-black/[0.06] dark:active:bg-white/10 text-[var(--text-primary)] text-[12px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    className="h-8 px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer shadow-2xs"
                   >
                     Open
                   </button>
@@ -321,12 +402,12 @@ export const DashboardScreen: React.FC = () => {
               </div>
 
               {/* Card 2: Google Saves */}
-              <div className="p-4 rounded-[12px] bg-[var(--surface-primary)] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.14] dark:hover:border-white/[0.16] transition-all flex flex-col justify-between gap-3 shadow-2xs">
+              <div className="glass-card p-4.5 rounded-[22px] hover:border-white/25 transition-all duration-300 hover:scale-[1.01] flex flex-col justify-between gap-3 shadow-md">
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-[8px] bg-[#330000] border border-[#FF9A00]/40 text-[#FF9A00] flex items-center justify-center font-bold text-[12px] shrink-0">
-                        Gs
+                      <div className="w-8 h-8 rounded-[10px] bg-white dark:bg-white/10 border border-black/10 dark:border-white/10 text-[#4285F4] flex items-center justify-center font-bold text-[14px] shrink-0 shadow-2xs">
+                        G
                       </div>
                       <div>
                         <h4 className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug">
@@ -359,7 +440,7 @@ export const DashboardScreen: React.FC = () => {
                 <div className="flex justify-end pt-1">
                   <button
                     onClick={() => handleOpenType('location')}
-                    className="h-8 sm:h-7.5 px-4.5 rounded-full border border-black/[0.15] dark:border-white/20 active:bg-black/[0.06] dark:active:bg-white/10 text-[var(--text-primary)] text-[12px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    className="h-8 px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer shadow-2xs"
                   >
                     Open
                   </button>
@@ -367,11 +448,11 @@ export const DashboardScreen: React.FC = () => {
               </div>
 
               {/* Card 3: Design Hub */}
-              <div className="p-4 rounded-[12px] bg-[var(--surface-primary)] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.14] dark:hover:border-white/[0.16] transition-all flex flex-col justify-between gap-3 shadow-2xs">
+              <div className="glass-card p-4.5 rounded-[22px] hover:border-white/25 transition-all duration-300 hover:scale-[1.01] flex flex-col justify-between gap-3 shadow-md">
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-[8px] bg-gradient-to-tr from-[#EA1821] to-[#FF7700] text-white flex items-center justify-center font-bold text-[12px] shrink-0">
+                      <div className="w-8 h-8 rounded-[10px] bg-gradient-to-tr from-[#EA1821] to-[#FF7700] text-white flex items-center justify-center font-bold text-[12px] shrink-0 shadow-2xs">
                         De
                       </div>
                       <div>
@@ -401,7 +482,7 @@ export const DashboardScreen: React.FC = () => {
                 <div className="flex justify-end pt-1">
                   <button
                     onClick={() => handleOpenType('design')}
-                    className="h-8 sm:h-7.5 px-4.5 rounded-full border border-black/[0.15] dark:border-white/20 active:bg-black/[0.06] dark:active:bg-white/10 text-[var(--text-primary)] text-[12px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    className="h-8 px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer shadow-2xs"
                   >
                     Open
                   </button>
@@ -409,11 +490,11 @@ export const DashboardScreen: React.FC = () => {
               </div>
 
               {/* Card 4: Articles & Docs */}
-              <div className="p-4 rounded-[12px] bg-[var(--surface-primary)] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.14] dark:hover:border-white/[0.16] transition-all flex flex-col justify-between gap-3 shadow-2xs">
+              <div className="glass-card p-4.5 rounded-[22px] hover:border-white/25 transition-all duration-300 hover:scale-[1.01] flex flex-col justify-between gap-3 shadow-md">
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-[8px] bg-[#007AFF] text-white flex items-center justify-center font-bold text-[12px] shrink-0">
+                      <div className="w-8 h-8 rounded-[10px] bg-[#007AFF] text-white flex items-center justify-center font-bold text-[12px] shrink-0 shadow-2xs">
                         Ar
                       </div>
                       <div>
@@ -443,7 +524,7 @@ export const DashboardScreen: React.FC = () => {
                 <div className="flex justify-end pt-1">
                   <button
                     onClick={() => handleOpenType('article')}
-                    className="h-8 sm:h-7.5 px-4.5 rounded-full border border-black/[0.15] dark:border-white/20 active:bg-black/[0.06] dark:active:bg-white/10 text-[var(--text-primary)] text-[12px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    className="h-8 px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer shadow-2xs"
                   >
                     Open
                   </button>
@@ -451,11 +532,11 @@ export const DashboardScreen: React.FC = () => {
               </div>
 
               {/* Card 5: Video Hub */}
-              <div className="p-4 rounded-[12px] bg-[var(--surface-primary)] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.14] dark:hover:border-white/[0.16] transition-all flex flex-col justify-between gap-3 shadow-2xs">
+              <div className="glass-card p-4.5 rounded-[22px] hover:border-white/25 transition-all duration-300 hover:scale-[1.01] flex flex-col justify-between gap-3 shadow-md">
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-[8px] bg-[#5856D6] text-white flex items-center justify-center font-bold text-[12px] shrink-0">
+                      <div className="w-8 h-8 rounded-[10px] bg-[#5856D6] text-white flex items-center justify-center font-bold text-[12px] shrink-0 shadow-2xs">
                         Vi
                       </div>
                       <div>
@@ -485,7 +566,7 @@ export const DashboardScreen: React.FC = () => {
                 <div className="flex justify-end pt-1">
                   <button
                     onClick={() => handleOpenType('video')}
-                    className="h-8 sm:h-7.5 px-4.5 rounded-full border border-black/[0.15] dark:border-white/20 active:bg-black/[0.06] dark:active:bg-white/10 text-[var(--text-primary)] text-[12px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    className="h-8 px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer shadow-2xs"
                   >
                     Open
                   </button>
@@ -493,11 +574,11 @@ export const DashboardScreen: React.FC = () => {
               </div>
 
               {/* Card 6: Notes & Snippets */}
-              <div className="p-4 rounded-[12px] bg-[var(--surface-primary)] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.14] dark:hover:border-white/[0.16] transition-all flex flex-col justify-between gap-3 shadow-2xs">
+              <div className="glass-card p-4.5 rounded-[22px] hover:border-white/25 transition-all duration-300 hover:scale-[1.01] flex flex-col justify-between gap-3 shadow-md">
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-[8px] bg-[#34C759] text-white flex items-center justify-center font-bold text-[12px] shrink-0">
+                      <div className="w-8 h-8 rounded-[10px] bg-[#34C759] text-white flex items-center justify-center font-bold text-[12px] shrink-0 shadow-2xs">
                         Nt
                       </div>
                       <div>
@@ -527,7 +608,7 @@ export const DashboardScreen: React.FC = () => {
                 <div className="flex justify-end pt-1">
                   <button
                     onClick={() => handleOpenType('note')}
-                    className="h-8 sm:h-7.5 px-4.5 rounded-full border border-black/[0.15] dark:border-white/20 active:bg-black/[0.06] dark:active:bg-white/10 text-[var(--text-primary)] text-[12px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    className="h-8 px-4.5 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] text-[12px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer shadow-2xs"
                   >
                     Open
                   </button>

@@ -7,6 +7,7 @@ import { MobileNav } from './components/layout/MobileNav';
 // Screens
 import { DashboardScreen } from './components/screens/DashboardScreen';
 import { AllSavesScreen } from './components/screens/AllSavesScreen';
+import { ReelsScreen } from './components/screens/ReelsScreen';
 import { RecentlySavedScreen } from './components/screens/RecentlySavedScreen';
 import { CollectionsScreen } from './components/screens/CollectionsScreen';
 import { CollectionDetailScreen } from './components/screens/CollectionDetailScreen';
@@ -38,6 +39,8 @@ const MainAppContent: React.FC = () => {
         return <DashboardScreen />;
       case 'all-saves':
         return <AllSavesScreen />;
+      case 'reels':
+        return <ReelsScreen />;
       case 'recently-saved':
         return <RecentlySavedScreen />;
       case 'collections':

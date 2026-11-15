@@ -1,29 +1,28 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   ExternalLink, 
+  Pin, 
+  Trash2, 
   Archive, 
   RotateCcw, 
-  Trash2, 
-  Pin, 
+  Sparkles, 
+  Copy, 
   Check, 
-  Copy,
-  Calendar, 
-  Folder, 
-  Tag as TagIcon,
-  Pencil,
-  Clock,
-  Image as ImageIcon,
-  Upload,
-  Sparkles,
-  Link2,
-  ChevronDown,
-  ChevronUp,
-  RotateCw
+  Edit3, 
+  Image as ImageIcon, 
+  Upload, 
+  Link as LinkIcon,
+  Maximize2,
+  FileText,
+  Share2,
+  Play
 } from 'lucide-react';
 import { useCollectly } from '../../context/CollectlyContext';
 import { SwiftButton, SwiftBadge } from '../ui/AppleDesignSystem';
-import { resolveThumbnailAutomatically, getCandidatesForContent } from '../../lib/thumbnailService';
+import { InstagramIcon } from '../ui/InstagramIcon';
+import { InstaBookmarkIcon } from '../ui/InstagramDesignIcons';
+import { getCandidatesForContent, resolveThumbnailAutomatically } from '../../lib/thumbnailService';
 import { clsx } from 'clsx';
 
 export const ItemDetailsPanel: React.FC = () => {
@@ -33,41 +32,49 @@ export const ItemDetailsPanel: React.FC = () => {
     updateItem, 
     deleteItem, 
     archiveItem, 
-    restoreItem,
-    togglePinItem,
-    collections,
+    restoreItem, 
+    togglePinItem, 
+    collections, 
     categories,
-    showToast
+    showToast 
   } = useCollectly();
 
+  const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
   const [editedCategory, setEditedCategory] = useState('');
   const [editedCollectionId, setEditedCollectionId] = useState('');
-  const [copied, setCopied] = useState(false);
-
-  // Thumbnail Picker & Decision Studio State
-  const [isThumbnailPickerOpen, setIsThumbnailPickerOpen] = useState(false);
   const [customImageUrl, setCustomImageUrl] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isStudioOpen, setIsStudioOpen] = useState(false);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedItem(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setSelectedItem]);
 
   if (!selectedItem) return null;
 
   const currentThumbnail = selectedItem.previewImage || resolveThumbnailAutomatically(selectedItem);
   const candidateThumbnails = getCandidatesForContent(selectedItem);
 
-  const handleSelectCandidate = (url: string) => {
+  const handleSelectThumbnail = (url: string) => {
     updateItem(selectedItem.id, { previewImage: url });
-    showToast('Thumbnail Selected', 'New cover applied to this post.', 'success');
+    showToast('Cover Thumbnail Updated', 'Saved new preview image for this post.', 'success');
   };
 
-  const handleApplyCustomUrl = (e: React.FormEvent) => {
+  const handleCustomImageSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (customImageUrl.trim()) {
       updateItem(selectedItem.id, { previewImage: customImageUrl.trim() });
       setCustomImageUrl('');
-      showToast('Thumbnail Updated', 'Custom image URL applied.', 'success');
+      showToast('Custom Thumbnail Saved', 'Custom preview URL applied to post.', 'success');
     }
   };
 
@@ -75,10 +82,10 @@ export const ItemDetailsPanel: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onloadend = () => {
         if (typeof reader.result === 'string') {
           updateItem(selectedItem.id, { previewImage: reader.result });
-          showToast('Image Uploaded', 'Custom image uploaded from your device.', 'success');
+          showToast('Image Uploaded', 'Device file saved as post thumbnail.', 'success');
         }
       };
       reader.readAsDataURL(file);
@@ -96,379 +103,379 @@ export const ItemDetailsPanel: React.FC = () => {
   const handleSaveEdit = () => {
     updateItem(selectedItem.id, {
       title: editedTitle.trim() || selectedItem.title,
-      description: editedDescription.trim(),
+      description: editedDescription.trim() || selectedItem.description,
       category: editedCategory || selectedItem.category,
       collectionId: editedCollectionId || undefined,
     });
     setIsEditing(false);
+    showToast('Saved', 'Item details updated.', 'success');
   };
 
   const handleCopyLink = () => {
     if (selectedItem.url) {
       navigator.clipboard.writeText(selectedItem.url);
       setCopied(true);
-      showToast('Link Copied', 'URL copied to clipboard', 'success');
       setTimeout(() => setCopied(false), 2000);
+      showToast('Link Copied', 'URL copied to clipboard.', 'info');
     }
   };
 
-  const handleRegenerateThumbnail = () => {
-    const newThumb = resolveThumbnailAutomatically({
-      url: selectedItem.url,
-      title: selectedItem.title,
-      description: selectedItem.description,
-      category: selectedItem.category,
-      type: selectedItem.type
-    }, Math.floor(Math.random() * 6) + 1);
-    updateItem(selectedItem.id, { previewImage: newThumb });
-    showToast('Thumbnail Updated', 'Content-aware thumbnail regenerated.', 'success');
-  };
+  const isInstagram = selectedItem.sourceDomain.includes('instagram.com') || selectedItem.type === 'social';
 
   const formattedDate = new Date(selectedItem.dateSaved).toLocaleDateString('en-US', {
-    weekday: 'short',
-    year: 'numeric',
     month: 'short',
     day: 'numeric',
+    year: 'numeric'
   });
 
-  const activeCollection = collections.find(c => c.id === selectedItem.collectionId);
-
   return (
-    <>
-      {/* Dimmed backdrop for mobile */}
+    <div 
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-5 md:p-8 animate-in fade-in duration-200"
+      onClick={() => setSelectedItem(null)}
+    >
+      {/* Centered Glassmorphism Popup Modal */}
       <div 
-        className="fixed inset-0 bg-black/30 backdrop-blur-xs z-40 md:hidden"
-        onClick={() => setSelectedItem(null)}
-      />
-
-      {/* Details Inspector Panel */}
-      <aside 
+        onClick={(e) => e.stopPropagation()}
         className={clsx(
-          "fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[380px] md:w-[400px] flex flex-col select-none",
-          "bg-[var(--surface-primary)] shadow-2xl border-l border-black/[0.08] dark:border-white/[0.08]",
-          "animate-in slide-in-from-right duration-200"
+          "relative w-full max-w-5xl max-h-[92vh] rounded-[24px] overflow-hidden flex flex-col",
+          "glass-panel shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border border-white/20 select-none animate-in zoom-in-95 duration-200"
         )}
       >
-        {/* Top Action Bar */}
-        <div className="h-14 px-4 flex items-center justify-between border-b border-black/[0.06] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.01]">
-          <div className="flex items-center gap-1">
+        {/* Top Header Toolbar */}
+        <div className="h-14 px-4 sm:px-6 flex items-center justify-between border-b border-black/[0.08] dark:border-white/[0.1] bg-white/40 dark:bg-black/30 backdrop-blur-xl shrink-0">
+          {/* Left Metadata Pill */}
+          <div className="flex items-center gap-2.5 min-w-0 pr-3">
+            {isInstagram ? (
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold insta-gradient-bg text-white flex items-center gap-1 shadow-xs shrink-0">
+                <InstagramIcon size={12} strokeWidth={2.4} />
+                <span>Instagram Post</span>
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#007AFF] text-white flex items-center gap-1 shadow-xs shrink-0 capitalize">
+                <FileText size={12} />
+                <span>{selectedItem.type}</span>
+              </span>
+            )}
+            <span className="text-[12px] text-[var(--text-muted)] truncate hidden sm:inline">
+              {selectedItem.sourceDomain} • {formattedDate}
+            </span>
+          </div>
+
+          {/* Right Toolbar Actions */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Pin / Unpin */}
             <button
               onClick={() => togglePinItem(selectedItem.id)}
               className={clsx(
-                "p-1.5 rounded-[6px] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer",
-                selectedItem.isPinned ? "text-[#007AFF]" : "text-[var(--text-secondary)]"
+                "p-2 rounded-full hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer",
+                selectedItem.isPinned ? "text-[#E1306C]" : "text-[var(--text-secondary)]"
               )}
               title={selectedItem.isPinned ? "Unpin item" : "Pin item to top"}
             >
-              <Pin size={15} fill={selectedItem.isPinned ? "currentColor" : "none"} />
+              <Pin size={16} fill={selectedItem.isPinned ? "currentColor" : "none"} />
             </button>
 
+            {/* Copy Link */}
+            {selectedItem.url && (
+              <button
+                onClick={handleCopyLink}
+                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+                title="Copy URL"
+              >
+                {copied ? <Check size={16} className="text-[#34C759]" /> : <Copy size={16} />}
+              </button>
+            )}
+
+            {/* Open Original */}
+            {selectedItem.url && (
+              <a
+                href={selectedItem.url}
+                target="_blank"
+                rel="noreferrer"
+                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#007AFF] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+                title="Open original link"
+              >
+                <ExternalLink size={16} />
+              </a>
+            )}
+
+            {/* Archive / Restore */}
             {selectedItem.isArchived ? (
               <button
                 onClick={() => restoreItem(selectedItem.id)}
-                className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[#34C759] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
-                title="Restore from archive"
+                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#34C759] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+                title="Restore item"
               >
-                <RotateCcw size={15} />
+                <RotateCcw size={16} />
               </button>
             ) : (
               <button
                 onClick={() => archiveItem(selectedItem.id)}
-                className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
+                className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#FF9500] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
                 title="Archive item"
               >
-                <Archive size={15} />
+                <Archive size={16} />
               </button>
             )}
 
+            {/* Delete */}
             <button
               onClick={() => deleteItem(selectedItem.id)}
-              className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[#D92D20] hover:bg-[#D92D20]/10 transition-colors cursor-pointer"
+              className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[#FD1D1D] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
               title="Delete item"
             >
-              <Trash2 size={15} />
+              <Trash2 size={16} />
+            </button>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedItem(null)}
+              className="ml-2 w-8 h-8 rounded-full bg-white/10 dark:bg-white/[0.08] hover:bg-white/20 text-[var(--text-primary)] flex items-center justify-center transition-all cursor-pointer border border-white/10 active:scale-95"
+              title="Close preview (Esc)"
+            >
+              <X size={17} strokeWidth={2.2} />
             </button>
           </div>
-
-          <button
-            onClick={() => setSelectedItem(null)}
-            className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
-            title="Close panel"
-          >
-            <X size={17} />
-          </button>
         </div>
 
-        {/* Scrollable Content Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5">
-          {/* Post Thumbnail & Decision Studio */}
-          <div className="space-y-2">
-            <div className="relative group/thumb w-full aspect-[16/10] rounded-[12px] overflow-hidden bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.08] shadow-2xs">
-              <img 
-                src={currentThumbnail} 
-                alt={selectedItem.title} 
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              />
+        {/* Modal Scrollable Body */}
+        <div className="flex-1 overflow-y-auto no-scrollbar grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-black/[0.08] dark:divide-white/[0.1]">
+          {/* Left Column: Full-Scale High-Res File Preview & Cover Studio */}
+          <div className="md:col-span-7 p-4 sm:p-6 space-y-4 flex flex-col justify-between">
+            <div className="space-y-4">
+              {/* Media Preview Box */}
+              <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] rounded-[18px] overflow-hidden glass-card shadow-lg border border-white/20 group">
+                <img 
+                  src={currentThumbnail} 
+                  alt={selectedItem.title} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80';
+                  }}
+                />
+                
+                {selectedItem.type === 'video' && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-2xs">
+                    <div className="w-14 h-14 rounded-full insta-gradient-bg text-white flex items-center justify-center shadow-2xl">
+                      <Play size={24} className="ml-1 fill-white" />
+                    </div>
+                  </div>
+                )}
 
-              {/* Overlay Badges & Trigger */}
-              <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-black/60 dark:bg-black/80 backdrop-blur-md text-white flex items-center gap-1 shadow-2xs">
-                  <ImageIcon size={10} />
-                  <span>Cover Thumbnail</span>
-                </span>
-              </div>
-
-              {/* Action Buttons Overlay */}
-              <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
+                {/* Quick Toggle Cover Studio */}
                 <button
                   type="button"
-                  onClick={() => setIsThumbnailPickerOpen(prev => !prev)}
-                  className="px-2.5 py-1 rounded-[7px] bg-white/95 dark:bg-black/80 hover:bg-white dark:hover:bg-black text-[var(--text-primary)] backdrop-blur-md text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 border border-black/10 dark:border-white/10"
-                  title="Decide or pick another thumbnail"
+                  onClick={() => setIsStudioOpen(!isStudioOpen)}
+                  className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-[11px] font-semibold flex items-center gap-1.5 border border-white/20 shadow-md cursor-pointer transition-transform active:scale-95"
                 >
-                  <Sparkles size={11} className="text-[#007AFF]" />
-                  <span>{isThumbnailPickerOpen ? 'Done' : 'Decide Thumbnail'}</span>
+                  <ImageIcon size={12} />
+                  <span>{isStudioOpen ? 'Hide Studio' : 'Thumbnail Studio'}</span>
                 </button>
               </div>
-            </div>
 
-            {/* Thumbnail Decision Drawer */}
-            {isThumbnailPickerOpen && (
-              <div className="p-3 rounded-[12px] bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-[12px] font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
-                    <Sparkles size={12} className="text-[#007AFF]" />
-                    <span>Choose Cover Thumbnail</span>
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={handleRegenerateThumbnail}
-                    className="text-[11px] font-medium text-[#007AFF] dark:text-[#0A84FF] hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <RotateCw size={10} />
-                    <span>Random Match</span>
-                  </button>
-                </div>
-
-                {/* Candidate Thumbnails Grid */}
-                <div className="grid grid-cols-3 gap-2">
-                  {candidateThumbnails.map((candUrl, idx) => {
-                    const isSelected = candUrl === currentThumbnail;
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => handleSelectCandidate(candUrl)}
-                        className={clsx(
-                          "relative aspect-[16/10] rounded-[8px] overflow-hidden cursor-pointer transition-all border",
-                          isSelected 
-                            ? "border-[#007AFF] ring-2 ring-[#007AFF]/50 scale-[1.02]" 
-                            : "border-black/[0.08] dark:border-white/[0.1] hover:opacity-90 hover:scale-[1.01]"
-                        )}
-                      >
-                        <img src={candUrl} alt="" className="w-full h-full object-cover" />
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-[#007AFF]/25 flex items-center justify-center">
-                            <span className="w-5 h-5 rounded-full bg-[#007AFF] text-white flex items-center justify-center shadow-xs">
-                              <Check size={11} strokeWidth={3} />
-                            </span>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Upload Local Image or Paste Direct Link */}
-                <div className="pt-2 border-t border-black/[0.05] dark:border-white/[0.06] space-y-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex-1 py-1.5 px-2.5 rounded-[7px] text-[11px] font-medium bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[var(--text-primary)] border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all"
-                    >
-                      <Upload size={11} />
-                      <span>Upload Device Photo</span>
-                    </button>
-                    <input 
-                      ref={fileInputRef}
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handleFileUpload} 
-                      className="hidden" 
-                    />
+              {/* Cover Thumbnail Decision Studio Accordion */}
+              {isStudioOpen && (
+                <div className="glass-card rounded-[16px] p-3.5 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px] font-bold text-[var(--text-primary)]">
+                      Pick Thumbnail for All Cards
+                    </span>
+                    <span className="text-[10px] text-[var(--text-muted)]">Instant Sync</span>
                   </div>
 
-                  <form onSubmit={handleApplyCustomUrl} className="flex items-center gap-1.5">
-                    <div className="relative flex-1">
-                      <Link2 size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                  {/* 6 Curated Candidates */}
+                  <div className="grid grid-cols-6 gap-2">
+                    {candidateThumbnails.map((candUrl: string, idx: number) => {
+                      const isSelected = currentThumbnail === candUrl;
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => handleSelectThumbnail(candUrl)}
+                          className={clsx(
+                            "relative aspect-square rounded-[8px] overflow-hidden cursor-pointer border-2 transition-all hover:scale-105",
+                            isSelected 
+                              ? "border-[#E1306C] shadow-md ring-2 ring-[#E1306C]/40" 
+                              : "border-transparent opacity-75 hover:opacity-100"
+                          )}
+                        >
+                          <img src={candUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-cover" />
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Custom URL or Upload */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <form onSubmit={handleCustomImageSubmit} className="flex-1 flex gap-1.5">
                       <input
                         type="url"
                         placeholder="Paste image URL..."
                         value={customImageUrl}
                         onChange={(e) => setCustomImageUrl(e.target.value)}
-                        className="w-full pl-7 pr-2 py-1 text-[11.5px] rounded-[7px] bg-white dark:bg-black/30 border border-black/[0.08] dark:border-white/[0.1] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                        className="flex-1 h-7.5 px-2.5 rounded-[7px] text-[11.5px] glass-card text-[var(--text-primary)] focus:outline-none"
                       />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={!customImageUrl.trim()}
-                      className="px-2.5 py-1 rounded-[7px] bg-[#007AFF] text-white text-[11px] font-medium disabled:opacity-40 cursor-pointer active:scale-95 transition-transform shrink-0"
-                    >
-                      Apply
-                    </button>
-                  </form>
+                      <button type="submit" className="h-7.5 px-3 rounded-[7px] insta-gradient-bg text-white text-[11px] font-semibold">
+                        Apply
+                      </button>
+                    </form>
+                    <label className="h-7.5 px-2.5 rounded-[7px] glass-card hover:bg-white/10 text-[var(--text-primary)] text-[11px] flex items-center gap-1 cursor-pointer">
+                      <Upload size={12} />
+                      <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                    </label>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* Author / Source Information */}
+            <div className="pt-2 flex items-center justify-between text-[12px] text-[var(--text-secondary)]">
+              <span>Author: <strong className="text-[var(--text-primary)]">{selectedItem.author || selectedItem.sourceDomain}</strong></span>
+              <span className="px-2.5 py-0.5 rounded-full glass-card text-[11px]">
+                {selectedItem.visitCount} views
+              </span>
+            </div>
           </div>
 
-          {/* Title & Description */}
-          {isEditing ? (
-            <div className="space-y-3">
-              <div>
-                <label className="text-[11px] font-semibold uppercase text-[var(--text-muted)] tracking-wider">Title</label>
+          {/* Right Column: AI Insights, Full Notes, Details & Tags */}
+          <div className="md:col-span-5 p-4 sm:p-6 space-y-4">
+            {/* Title & Edit Section */}
+            {isEditing ? (
+              <div className="space-y-3">
                 <input
                   type="text"
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 text-[13.5px] rounded-[8px] bg-black/[0.04] dark:bg-white/[0.08] border border-black/[0.08] dark:border-white/[0.12] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  className="w-full h-9 px-3 rounded-[8px] glass-card text-[14px] font-semibold text-[var(--text-primary)] focus:outline-none"
+                  placeholder="Post title"
                 />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold uppercase text-[var(--text-muted)] tracking-wider">Description</label>
                 <textarea
-                  rows={3}
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 text-[13px] rounded-[8px] bg-black/[0.04] dark:bg-white/[0.08] border border-black/[0.08] dark:border-white/[0.12] focus:outline-none focus:ring-2 focus:ring-[#007AFF] resize-none"
+                  rows={3}
+                  className="w-full p-2.5 rounded-[8px] glass-card text-[12.5px] text-[var(--text-primary)] focus:outline-none resize-none"
+                  placeholder="Description..."
                 />
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSaveEdit}
+                    className="h-8 px-4 rounded-[8px] insta-gradient-bg text-white text-[12px] font-semibold"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="h-8 px-3 rounded-[8px] glass-card text-[12px]"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2 justify-end pt-1">
-                <SwiftButton size="sm" variant="plain" onClick={() => setIsEditing(false)}>Cancel</SwiftButton>
-                <SwiftButton size="sm" variant="prominent" onClick={handleSaveEdit}>Save</SwiftButton>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <h2 className="text-[17px] sm:text-[19px] font-bold text-[var(--text-primary)] leading-snug">
+                    {selectedItem.title}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={handleStartEdit}
+                    className="p-1 rounded-[6px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                    title="Edit Title / Note"
+                  >
+                    <Edit3 size={15} />
+                  </button>
+                </div>
+                <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                  {selectedItem.description}
+                </p>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-1.5">
-              <div className="flex items-start justify-between gap-2">
-                <h2 className="text-[16px] font-semibold text-[var(--text-primary)] leading-snug tracking-tight">
-                  {selectedItem.title}
-                </h2>
-                <button
-                  onClick={handleStartEdit}
-                  className="p-1 rounded-[5px] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] cursor-pointer"
-                  title="Edit details"
-                >
-                  <Pencil size={13} />
-                </button>
-              </div>
-              <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-                {selectedItem.description}
-              </p>
-            </div>
-          )}
+            )}
 
-          {/* External URL card with Copy button */}
-          {selectedItem.url && (
-            <div className="flex items-center justify-between p-3 rounded-[9px] bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08]">
-              <div className="min-w-0 pr-2">
-                <p className="text-[10.5px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">Source URL</p>
-                <p className="text-[12.5px] text-[var(--text-primary)] font-medium truncate mt-0.5">{selectedItem.sourceDomain}</p>
+            {/* AI Executive Summary Card */}
+            <div className="glass-card rounded-[16px] p-4 space-y-2 border border-white/15 shadow-sm">
+              <div className="flex items-center gap-1.5 text-[#E1306C] dark:text-[#FD1D1D] font-bold text-[12.5px]">
+                <Sparkles size={14} />
+                <span>AI Knowledge Summary</span>
               </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <button
-                  onClick={handleCopyLink}
-                  className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
-                  title="Copy Link"
-                >
-                  {copied ? <Check size={14} className="text-[#34C759]" /> : <Copy size={14} />}
-                </button>
+              <p className="text-[12px] sm:text-[12.5px] text-[var(--text-secondary)] leading-relaxed">
+                {selectedItem.aiSummary || selectedItem.description}
+              </p>
+
+              {/* Key Takeaways */}
+              {selectedItem.aiKeyTakeaways && selectedItem.aiKeyTakeaways.length > 0 && (
+                <div className="pt-2 border-t border-black/[0.05] dark:border-white/[0.06] space-y-1.5">
+                  <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                    Key Highlights
+                  </span>
+                  <ul className="space-y-1">
+                    {selectedItem.aiKeyTakeaways.map((takeaway, idx) => (
+                      <li key={idx} className="text-[11.5px] text-[var(--text-primary)] flex items-start gap-1.5">
+                        <span className="text-[#34C759] font-bold">•</span>
+                        <span>{takeaway}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Category & Tags */}
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[var(--text-muted)] font-medium">Category</span>
+                <span className="px-2.5 py-0.5 rounded-full insta-gradient-bg text-white font-semibold text-[11px]">
+                  {selectedItem.category}
+                </span>
+              </div>
+
+              {selectedItem.tags && selectedItem.tags.length > 0 && (
+                <div className="space-y-1">
+                  <span className="text-[11.5px] text-[var(--text-muted)] font-medium">Tags</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {selectedItem.tags.map(tag => (
+                      <span 
+                        key={tag}
+                        className="px-2 py-0.5 rounded-[6px] bg-white/10 dark:bg-white/[0.06] text-[var(--text-secondary)] text-[11px] border border-white/5"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Bar on Bottom */}
+            <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.1] flex items-center justify-between">
+              {selectedItem.url ? (
                 <a
                   href={selectedItem.url}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1.5 rounded-[6px] text-[#007AFF] hover:bg-[#007AFF]/10 transition-colors cursor-pointer"
-                  title="Open source link"
+                  rel="noreferrer"
+                  className="h-9 px-4 rounded-[10px] insta-gradient-bg text-white text-[12px] font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
                 >
-                  <ExternalLink size={14} />
+                  <ExternalLink size={13} />
+                  <span>Open Full Content</span>
                 </a>
-              </div>
-            </div>
-          )}
+              ) : (
+                <div />
+              )}
 
-          {/* Clean Executive Summary (Notion/Linear style, no AI slop gradients) */}
-          <div className="p-3.5 rounded-[10px] bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.08] space-y-2">
-            <h4 className="text-[12px] font-semibold text-[var(--text-primary)]">
-              Summary & Key Points
-            </h4>
-            <p className="text-[12.5px] text-[var(--text-secondary)] leading-relaxed">
-              {selectedItem.aiSummary || selectedItem.description}
-            </p>
-            {selectedItem.aiKeyTakeaways && selectedItem.aiKeyTakeaways.length > 0 && (
-              <ul className="space-y-1 pt-1.5 border-t border-black/[0.05] dark:border-white/[0.06]">
-                {selectedItem.aiKeyTakeaways.map((takeaway, idx) => (
-                  <li key={idx} className="text-[12px] text-[var(--text-secondary)] flex items-start gap-1.5">
-                    <span className="text-[var(--text-muted)]">•</span>
-                    <span>{takeaway}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* Metadata Grid */}
-          <div className="space-y-2 text-[12.5px]">
-            <div className="flex items-center justify-between py-1.5 border-b border-black/[0.04] dark:border-white/[0.05]">
-              <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                <TagIcon size={13} className="opacity-70" />
-                <span>Category</span>
-              </div>
-              <SwiftBadge variant="subtle">{selectedItem.category}</SwiftBadge>
-            </div>
-
-            <div className="flex items-center justify-between py-1.5 border-b border-black/[0.04] dark:border-white/[0.05]">
-              <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                <Folder size={13} className="opacity-70" />
-                <span>Collection</span>
-              </div>
-              <span className="font-medium text-[var(--text-primary)]">
-                {activeCollection?.name || 'None'}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between py-1.5 border-b border-black/[0.04] dark:border-white/[0.05]">
-              <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                <Calendar size={13} className="opacity-70" />
-                <span>Date Saved</span>
-              </div>
-              <span className="text-[var(--text-muted)] text-[12px]">{formattedDate}</span>
-            </div>
-
-            <div className="flex items-center justify-between py-1.5 border-b border-black/[0.04] dark:border-white/[0.05]">
-              <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                <Clock size={13} className="opacity-70" />
-                <span>Type</span>
-              </div>
-              <span className="text-[var(--text-muted)] text-[12px] capitalize">{selectedItem.readingTime || selectedItem.type}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedItem(null)}
+                className="h-9 px-4 rounded-[10px] glass-card text-[var(--text-primary)] text-[12px] font-medium hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
+              >
+                Close Preview
+              </button>
             </div>
           </div>
-
-          {/* Tags */}
-          {selectedItem.tags && selectedItem.tags.length > 0 && (
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-semibold uppercase text-[var(--text-muted)] tracking-wider">Tags</span>
-              <div className="flex flex-wrap gap-1.5">
-                {selectedItem.tags.map((tag) => (
-                  <SwiftBadge key={tag} variant="outline" className="text-[11px]">
-                    #{tag}
-                  </SwiftBadge>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
-      </aside>
-    </>
+      </div>
+    </div>
   );
 };
+
+export default ItemDetailsPanel;

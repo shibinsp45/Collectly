@@ -48,13 +48,26 @@ interface CollectlyContextType {
   setIsOnboardingOpen: (open: boolean) => void;
   updateUserProfile: (name: string, email?: string, avatar?: string) => void;
 
-  // Biometrics
+  // Biometrics & Mobile Security (Fingerprint & Phone PIN)
   isBiometricModalOpen: boolean;
   setIsBiometricModalOpen: (open: boolean) => void;
   isBiometricsEnabled: boolean;
   enableBiometrics: () => Promise<boolean>;
   disableBiometrics: () => void;
   loginWithFingerprint: () => Promise<boolean>;
+  isMobileLocked: boolean;
+  lockMobileSaves: () => void;
+  unlockMobileSaves: () => void;
+  unlockWithPin: (pin: string) => boolean;
+  mobilePin: string;
+  setMobilePin: (pin: string) => void;
+
+  // Mobile Push Notifications & Widgets
+  pushNotificationsEnabled: boolean;
+  togglePushNotifications: () => Promise<boolean>;
+  sendMobilePushNotification: (title: string, body: string) => void;
+  isWidgetActive: boolean;
+  setIsWidgetActive: (active: boolean) => void;
 
   // Syncing
   isSyncingInstagram: boolean;
@@ -234,9 +247,93 @@ export const CollectlyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
+  // Mobile Security & PIN Lock State (Default PIN is '1234')
+  const [mobilePin, setMobilePinState] = useState<string>(() => {
+    return localStorage.getItem('collectly_mobile_pin') || '1234';
+  });
+  const [isMobileLocked, setIsMobileLocked] = useState<boolean>(false);
+
+  const setMobilePin = (pin: string) => {
+    setMobilePinState(pin);
+    localStorage.setItem('collectly_mobile_pin', pin);
+    showToast('PIN Updated', 'Your 4-digit mobile PIN has been updated.', 'success');
+  };
+
+  const lockMobileSaves = () => {
+    setIsMobileLocked(true);
+    setIsBiometricModalOpen(true);
+    showToast('Saved Items Locked', 'Unlocked with Mobile Fingerprint or PIN.', 'info');
+  };
+
+  const unlockMobileSaves = () => {
+    setIsMobileLocked(false);
+    setIsBiometricModalOpen(false);
+    showToast('Unlocked Successfully', 'Your saved files are accessible.', 'success');
+  };
+
+  const unlockWithPin = (enteredPin: string): boolean => {
+    if (enteredPin === mobilePin) {
+      unlockMobileSaves();
+      return true;
+    }
+    showToast('Incorrect PIN', 'The PIN entered did not match. Default is 1234.', 'danger');
+    return false;
+  };
+
+  // Mobile Push Notifications & Widget
+  const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState<boolean>(() => {
+    return localStorage.getItem('collectly_push_enabled') === 'true';
+  });
+  const [isWidgetActive, setIsWidgetActive] = useState<boolean>(() => {
+    return localStorage.getItem('collectly_widget_active') !== 'false';
+  });
+
+  const togglePushNotifications = async (): Promise<boolean> => {
+    if (!pushNotificationsEnabled) {
+      if ('Notification' in window) {
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+          setPushNotificationsEnabled(true);
+          localStorage.setItem('collectly_push_enabled', 'true');
+          showToast('Notifications Active', 'Mobile push notifications enabled for new saves and reels.', 'success');
+          try {
+            new Notification('Collectly Mobile Push', {
+              body: 'Push notifications are live! You will get alerts for saved reels & files.',
+              icon: 'https://www.instagram.com/favicon.ico'
+            });
+          } catch {
+            // ignore fallback
+          }
+          return true;
+        }
+      }
+      // If notification API not supported or denied, still enable simulated in-app push
+      setPushNotificationsEnabled(true);
+      localStorage.setItem('collectly_push_enabled', 'true');
+      showToast('Notifications Active', 'In-app mobile push alerts are now active.', 'success');
+      return true;
+    } else {
+      setPushNotificationsEnabled(false);
+      localStorage.setItem('collectly_push_enabled', 'false');
+      showToast('Notifications Disabled', 'Push notifications turned off.', 'info');
+      return false;
+    }
+  };
+
+  const sendMobilePushNotification = (title: string, body: string) => {
+    showToast(`🔔 ${title}`, body, 'info');
+    if (pushNotificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification(title, { body, icon: 'https://www.instagram.com/favicon.ico' });
+      } catch {
+        // fallback
+      }
+    }
+  };
+
   const [items, setItems] = useState<SavedItem[]>(() => {
     try {
-      const stored = localStorage.getItem('collectly_items_v3');
+      const stored = localStorage.getItem('collectly_items_v4');
       const loaded: SavedItem[] = stored ? JSON.parse(stored) : INITIAL_ITEMS;
       return loaded.map(item => ({
         ...item,
@@ -791,6 +888,17 @@ export const CollectlyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         enableBiometrics,
         disableBiometrics,
         loginWithFingerprint,
+        isMobileLocked,
+        lockMobileSaves,
+        unlockMobileSaves,
+        unlockWithPin,
+        mobilePin,
+        setMobilePin,
+        pushNotificationsEnabled,
+        togglePushNotifications,
+        sendMobilePushNotification,
+        isWidgetActive,
+        setIsWidgetActive,
         isSyncingInstagram,
         isSyncingGoogle,
         syncInstagramSaves,

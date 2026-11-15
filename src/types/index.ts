@@ -12,6 +12,7 @@ export type ContentType =
 export type ScreenId = 
   | 'dashboard'
   | 'all-saves'
+  | 'reels'
   | 'recently-saved'
   | 'collections'
   | 'categories'
